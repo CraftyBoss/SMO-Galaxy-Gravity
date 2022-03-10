@@ -86,37 +86,11 @@ void mars::calcGravityDirection(al::LiveActor* player) {
                     float distX = abs(dist.x);
                     float distY = abs(dist.y);
                     float distZ = abs(dist.z);
-                    if (distY >= distX && distY >= distZ) {
-                        if (distX < radius && distZ < radius) {
-                            gravity = {0, dist.y, 0}; // y face
-                        } else if (distX < radius && distZ > radius) {
-                            gravity = {0, -radius*dist.y/distY + dist.y, -radius*dist.z/distZ + dist.z}; // edge 1
-                        } else if (distX > radius && distZ < radius) {
-                            gravity = {-radius*dist.x/distX + dist.x, -radius*dist.y/distY + dist.y, 0}; // edge 2
-                        } else if (distX > radius && distZ > radius) {
-                            gravity = {-radius*dist.x/distX + dist.x, -radius*dist.y/distY + dist.y, -radius*dist.z/distZ + dist.z}; // corner
-                        }
-                    } else if (distX >= distY && distX >=distZ) {
-                        if (distY < radius && distZ < radius) {
-                            gravity = {dist.x, 0, 0};
-                        } else if (distY <= radius && distZ >= radius) {
-                            gravity = {-radius*dist.x/distX + dist.x, 0, -radius*dist.z/distZ + dist.z}; // edge 1
-                        } else if (distY >= radius && distZ <= radius) {
-                            gravity = {-radius*dist.x/distX + dist.x, -radius*dist.y/distY + dist.y, 0}; // edge 2
-                        } else if (distY >= radius && distZ >= radius) {
-                            gravity = {-radius*dist.x/distX + dist.x, -radius*dist.y/distY + dist.y, -radius*dist.z/distZ + dist.z}; // corner
-                        }
-                    } else if (distZ >= distY && distZ >= distX) {
-                        if (distY < radius && distX < radius) {
-                            gravity = {0, 0, dist.z};
-                        } else if (distY <= radius && distX >= radius) {
-                            gravity = {-radius*dist.x/distX + dist.x, 0, -radius*dist.z/distZ + dist.z}; // edge 1
-                        } else if (distY >= radius && distX <= radius) {
-                            gravity = {0, -radius*dist.y/distY + dist.y, -radius*dist.z/distZ + dist.z}; // edge 2
-                        } else if (distY >= radius && distZ >= radius) {
-                            gravity = {-radius*dist.x/distX + dist.x, -radius*dist.y/distY + dist.y, -radius*dist.z/distZ + dist.z}; // corner
-                        }
-                    }
+                    
+                    sead::Vector3f closestPointInBox = {al::clamp(dist.x,-radius,radius),  al::clamp(dist.y,-radius,radius), al::clamp(dist.z,-radius,radius)};
+
+                    gravity = {dist.x - closestPointInBox.x, dist.y - closestPointInBox.y, dist.z - closestPointInBox.z};
+
                     gravity = calcMtxRot(areaMtxScaled, &gravity);
                     if (isInverted) {
                         gravity = {-gravity.x, -gravity.y, -gravity.z};
@@ -163,14 +137,10 @@ void mars::calcGravityDirection(al::LiveActor* player) {
                 }
                 case Wedge: {
                     isVertAbsorber = false;
-                    if (dist.y > 0 && dist.z < 0) {
-                        gravity = {0, -dist.y, -dist.z};
-                        break;
-                    }
-                    gravity = *al::getGravity(player);
-                    sead::Vector3f invertedGravity = {-gravity.x, -gravity.y, -gravity.z};
-                    storedUpDir = invertedGravity;
-                    return;
+                    float radius = 500;
+                    // pushes gravity in -y +z direction from +y -z edge
+                    gravity = {0, -dist.y - radius*scale.y, -dist.z - radius*scale.z};
+                    break;
                 }
                 case Disk: {
                     isVertAbsorber = false;
