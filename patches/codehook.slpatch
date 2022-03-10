@@ -1,0 +1,78 @@
+[version=100, target=main]
+StageScene::control+18:
+    BL stageSceneHook
+4C8648: // hook to the init of a stage to modify certain conditions (we also have access to SceneInitInfo)
+    BL stageInitHook
+
+// hooks to start logger
+5359D8: // GameSystem::init 
+    BL tryInitSocket
+B59E28: // sead::system::print
+    B seadPrintHook
+5359DC:
+    MOV X0, X19 // move GameSystem to arg register
+    BL setupDebugMenu
+    
+50F258: // HakoniwaSequence::drawMain+84
+    MOV X0, X19 // HakoniwaSequence
+    MOV X1, SP // viewport
+    MOV X2, X20 // drawContext
+    BL drawMainHook
+
+//50E89C:
+//    BL threadInit
+
+//4C8958:
+//    BL initDebugListHook
+
+1B3F0C: // disables call to open HTML viewer during first time odyssey flight
+    NOP
+
+1F2A2C: // patches checkpoint system to always allow warping
+    MOV W0, #1
+
+4B5E30: // patches actor factory ctor with custom matching factory
+    B ProjectActorFactory
+4BE628: // patches camera poser factory with custom matching factory
+    B ProjectCameraPoserFactory
+
+// Amiibo Button Disabling
+577078: // rs::isHoldAmiiboMode
+    MOV X0, #0
+    RET
+577018: // rs::isTriggerAmiiboMode
+    MOV X0, #0
+    RET
+
+// Snapshot Button Disabling
+//576FB8: // rs::isTriggerSnapShotMode
+//    MOV X0, #0
+//    RET
+
+// Temp Mars Gravity hooks
+
+// AreaFactory hook
+5097e4:
+    bl ProjectAreaFactory
+5059d8:
+    bl ProjectAreaFactory
+4c9050:
+    bl ProjectAreaFactory
+4a9848:
+    bl ProjectAreaFactory
+4a7cc4:
+    bl ProjectAreaFactory
+4a5878:
+    bl ProjectAreaFactory
+
+// PlayerActorHakoniwa::movement+A30 prevents PlayerJointKeeper from updating 
+41E764:
+    NOP
+
+// Sets all Actors who have TQSV to have TQGSV
+8DC2D0:
+    MOV W8, #7
+
+// inits hack cap actor with TQGSV instead
+4463D8:
+    BL initHackCapHook
