@@ -22,17 +22,12 @@ B59E28: // sead::system::print
 //50E89C:
 //    BL threadInit
 
-//4C8958:
-//    BL initDebugListHook
-
 1B3F0C: // disables call to open HTML viewer during first time odyssey flight
     NOP
 
 1F2A2C: // patches checkpoint system to always allow warping
     MOV W0, #1
 
-4B5E30: // patches actor factory ctor with custom matching factory
-    B ProjectActorFactory
 4BE628: // patches camera poser factory with custom matching factory
     B ProjectCameraPoserFactory
 
@@ -49,7 +44,7 @@ B59E28: // sead::system::print
 //    MOV X0, #0
 //    RET
 
-// Temp Mars Gravity hooks
+// Mars Gravity hooks
 
 // AreaFactory hook
 5097e4:

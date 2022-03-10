@@ -23,8 +23,8 @@ namespace cc {
 
             float mOffsetY = 120.0f; // 0x140
             float mDist = 1600.0f; // 0x144
-            float mAngleV = 20.0f;   // 0x148
-            float mAngleH = 20.0f;   // 0x148
+            float mAngleV = 0.0f;   // 0x148
+            float mAngleH = 0.0f;   // 0x148
             float mSnapSpeed = 0.15f; // 0x14C
             bool mIsResetAngleIfSwitchTarget = false;  // 0x150
             sead::Vector3f mPrevUpDir = sead::Vector3f::ey;

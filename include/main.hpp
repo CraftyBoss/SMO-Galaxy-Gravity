@@ -21,8 +21,6 @@
 #include "game/Actors/Shine.h"
 #include "game/HakoniwaSequence/HakoniwaSequence.h"
 
-#include "actors/BombHei.hpp"
-
 #include "rs/util.hpp"
 
 #include "sead/math/seadVector.h"
@@ -46,9 +44,3 @@
 #define BTOC(bool) (bool ? "True" : "False") // converts boolean to true/false char
 
 #define TEMPPLAYERNAME "Crafty"
-
-struct DebugWarpPoint
-{
-    char pointName[0x20] = {};
-    sead::Vector3f warpPos = sead::Vector3f();
-};

@@ -14,8 +14,6 @@ static bool showMenu = true;
 
 static bool isInGame = false;
 
-DebugWarpPoint warpPoints[40];
-
 int listCount = 0;
 
 int curWarpPoint = 0;
@@ -52,37 +50,6 @@ void drawBackground(agl::DrawContext *context)
 }
 
 // ------------- Hooks -------------
-
-al::StageInfo *initDebugListHook(const al::Scene *curScene)
-{
-
-    // hook that gets all objects put in DebugList and adds their coordinates to a warp point array
-
-    al::StageInfo *info = al::getStageInfoMap(curScene, 0);
-
-    al::PlacementInfo rootInfo = al::PlacementInfo();
-
-    al::tryGetPlacementInfoAndCount(&rootInfo, &listCount, info, "DebugList");
-
-    if (listCount > 0)
-    {
-        for (size_t i = 0; i < listCount; i++)
-        {
-            al::PlacementInfo objInfo = al::PlacementInfo();
-
-            al::getPlacementInfoByIndex(&objInfo, rootInfo, i);
-
-            const char *displayName = "";
-            al::tryGetDisplayName(&displayName, objInfo);
-
-            strcpy(warpPoints[i].pointName, displayName);
-
-            al::tryGetTrans(&warpPoints[i].warpPos, objInfo);
-        }
-    }
-
-    return info;
-}
 
 void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead::DrawContext *drawContext)
 {
