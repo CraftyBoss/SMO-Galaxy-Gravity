@@ -130,35 +130,25 @@ ulong threadInit()
     return 0x20;
 }
 
-void stageSceneHook()
-{
-
+void stageSceneHook() {
     __asm("MOV X19, X0");
 
     StageScene *stageScene;
-    __asm("MOV %[result], X0"
-          : [result] "=r"(stageScene));
+    __asm("MOV %[result], X0" : [result] "=r"(stageScene));
 
     al::PlayerHolder *pHolder = al::getScenePlayerHolder(stageScene);
     PlayerActorHakoniwa *p1 = al::tryGetPlayerActor(pHolder, 0);
+    HackCap* cap = p1->mHackCap;
 
     isInGame = true;
 
-    if (p1) {
-        mars::calcGravityDirection(p1);
-    }
-    if (p1->mHackCap) {
-        mars::calcGravityDirection(p1->mHackCap);
-    }
+    if (p1) mars::calcGravityDirection(p1);
+
+    if (cap) mars::calcGravityDirection(cap);
+
+    if (al::isPadTriggerUp(-1)) showMenu = !showMenu; // menu toggle
     
-
-    if (al::isPadTriggerUp(-1)) // enables/disables debug menu
-    {
-        showMenu = !showMenu;
-    }
-
-    __asm("MOV X0, %[input]"
-          : [input] "=r"(stageScene));
+    __asm("MOV X0, %[input]" : [input] "=r"(stageScene));
 }
 
 void seadPrintHook(const char *fmt, ...) // hook for replacing sead::system::print with our custom logger

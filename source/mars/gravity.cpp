@@ -12,12 +12,6 @@
 #include <cmath>
 #include "al/camera/CameraAngleVerticalCtrl.h"
 
-static sead::Vector3f storedUpDir = {0,0,0};
-static bool isVertAbsorber = false;
-// static sead::Matrix34f playerMtx;
-// static sead::Vector3f playerPos = {0,0,0};
-static bool isGravity = false;
-
 /*
  * GRAVITY TYPES
  * It's important to note that all of these shapes should use the area closest to their actual shape (AreaCube, AreaSphere, AreaCylinder etc).
@@ -28,42 +22,31 @@ enum GravityType : int {
     Spherical = 0, Cuboidal = 1, Parallel = 2, Cylindrical = 3, Torus = 4, Wedge = 5, Disk = 6, Cone = 7
 };
 
-enum CubeSide : int {
-    faceY = 0, faceX = 1, faceZ = 2, 
-    edgeXpZp = 3, edgeXnZp = 4, edgeXpZn = 5, edgeXnZn = 6, 
-    edgeXpYp = 7, edgeXnYp = 8, edgeXpYn = 9, edgeXnYn = 10,
-    edgeZpYp = 11, edgeZnYp = 12, edgeZpYn = 13, edgeZnYn = 14,
-    cornerXpYpZp = 15, cornerXpYpZn = 16, cornerXpYnZp = 17, cornerXpYnZn = 18, 
-    cornerXnYpZp = 19, cornerXnYpZn = 20, cornerXnYnZp = 21, cornerXnYnAn = 22
-};
 
 void mars::calcGravityDirection(al::LiveActor* player) {
     sead::Vector3f* playerTrans = al::getTrans(player);
-    // ::playerPos = *playerTrans;
-    // ::playerMtx = player->mPoseKeeper->getMtx();
-
     al::AreaObjGroup* gravityAreaGroup = al::tryFindAreaObjGroup(player, "GravityArea");
     
     if (gravityAreaGroup) {
         al::AreaObj* gravityArea = gravityAreaGroup->getInVolumeAreaObj(*playerTrans);
-    
+
         if (gravityArea && !rs::isPlayer2D(player)) {
-            ::isGravity = true;
             bool isInverted;
             int gravityType;
             al::tryGetAreaObjArg(&gravityType, gravityArea, "GravityType");
             al::tryGetAreaObjArg(&isInverted, gravityArea, "IsInverted");
             sead::Vector3f gravity = {0,0,0};
             sead::Vector3f scale = gravityArea->mAreaShape->mScale;
-            sead::Vector3f areaPos =  {gravityArea->mAreaTR.m[0][3], gravityArea->mAreaTR.m[1][3],gravityArea->mAreaTR.m[2][3]};
+            sead::Matrix34f mtx = gravityArea->mAreaTR;
+            sead::Vector3f areaPos =  {mtx.m[0][3], mtx.m[1][3],mtx.m[2][3]};
             sead::Matrix33f areaMtxScaled = {
-                gravityArea->mAreaTR.m[0][0]*scale.x, gravityArea->mAreaTR.m[0][1]*scale.x, gravityArea->mAreaTR.m[0][2]*scale.x, 
-                gravityArea->mAreaTR.m[1][0]*scale.y, gravityArea->mAreaTR.m[1][1]*scale.y, gravityArea->mAreaTR.m[1][2]*scale.y,
-                gravityArea->mAreaTR.m[2][0]*scale.z, gravityArea->mAreaTR.m[2][1]*scale.z, gravityArea->mAreaTR.m[2][2]*scale.z};
+                mtx.m[0][0]*scale.x, mtx.m[0][1]*scale.x, mtx.m[0][2]*scale.x, 
+                mtx.m[1][0]*scale.y, mtx.m[1][1]*scale.y, mtx.m[1][2]*scale.y,
+                mtx.m[2][0]*scale.z, mtx.m[2][1]*scale.z, mtx.m[2][2]*scale.z};
             sead::Matrix33f areaMtx = {
-                gravityArea->mAreaTR.m[0][0], gravityArea->mAreaTR.m[0][1], gravityArea->mAreaTR.m[0][2], 
-                gravityArea->mAreaTR.m[1][0], gravityArea->mAreaTR.m[1][1], gravityArea->mAreaTR.m[1][2],
-                gravityArea->mAreaTR.m[2][0], gravityArea->mAreaTR.m[2][1], gravityArea->mAreaTR.m[2][2]};
+                mtx.m[0][0], mtx.m[0][1], mtx.m[0][2], 
+                mtx.m[1][0], mtx.m[1][1], mtx.m[1][2],
+                mtx.m[2][0], mtx.m[2][1], mtx.m[2][2]};
             sead::Matrix33f inverseMtx = calcInverseMtx(areaMtx);
             sead::Vector3f dist = {areaPos.x - playerTrans->x, areaPos.y - playerTrans->y, areaPos.z - playerTrans->z};
             dist = calcMtxRot(inverseMtx, &dist);
@@ -72,51 +55,40 @@ void mars::calcGravityDirection(al::LiveActor* player) {
                 case Spherical: {
                     // points towards position of the area
                     gravity = dist;
-                    isVertAbsorber = false;
                     break;
                 }
                 case Cuboidal: {
-                    // need to rewrite to smooth out corners and edges by defining a base face length for the cube (probably 250u)
-                    isVertAbsorber = false;
                     sead::Vector3f dist = {areaPos.x - playerTrans->x, areaPos.y - playerTrans->y, areaPos.z - playerTrans->z};
                     sead::Matrix33f inverseMtx = calcInverseMtx(areaMtxScaled);
                     dist = calcMtxRot(inverseMtx, &dist);
                     float radius = 250;
-                    int cubeSide;
-                    float distX = abs(dist.x);
-                    float distY = abs(dist.y);
-                    float distZ = abs(dist.z);
-                    
-                    sead::Vector3f closestPointInBox = {al::clamp(dist.x,-radius,radius),  al::clamp(dist.y,-radius,radius), al::clamp(dist.z,-radius,radius)};
-
-                    gravity = {dist.x - closestPointInBox.x, dist.y - closestPointInBox.y, dist.z - closestPointInBox.z};
-
+                    // gravity points towards nearest point on a cubes surface; if inside, pushes you out.
+                    if (abs(dist.x) < radius && abs(dist.y) < radius && abs(dist.z) < radius) {
+                        gravity = {-dist.x, -dist.y, -dist.z};
+                    } else {
+                        sead::Vector3f closestPointInBox = {al::clamp(dist.x,-radius,radius),  al::clamp(dist.y,-radius,radius), al::clamp(dist.z,-radius,radius)};
+                        gravity = {dist.x - closestPointInBox.x, dist.y - closestPointInBox.y, dist.z - closestPointInBox.z};
+                    }
                     gravity = calcMtxRot(areaMtxScaled, &gravity);
                     if (isInverted) {
                         gravity = {-gravity.x, -gravity.y, -gravity.z};
                     }
                     al::normalize(&gravity);
                     al::setGravity(player, gravity);
-                    sead::Vector3f invertedGravity = {-gravity.x, -gravity.y, -gravity.z};
-                    storedUpDir = invertedGravity;
                     return;
                 }
                 case Parallel: {
                     // rotate the cube to the direction wanted. default is down
-                    isVertAbsorber = false;
                     gravity = {0.0, -1.0, 0.0};
                     break;
                 }
                 case Cylindrical: {
-                    isVertAbsorber = false;
                     gravity = {dist.x, 0.0, dist.z};
                     break;
                 }
                 case Torus: {
-                    // ngl not even i know how this one works and i figured out the math myself
-                    // it's like, a cylindrical sphere, bro
-                    isVertAbsorber = false;
                     // base radius is 250; scaling the area will also scale the radius.
+                    // radius is measured from center of the torus to center of the circle of the torus, if that makes sense.
                     float R = 250;
                     sead::Vector3f dist = {areaPos.x - playerTrans->x, areaPos.y - playerTrans->y, areaPos.z - playerTrans->z};
                     sead::Matrix33f inverseMtx = calcInverseMtx(areaMtxScaled);
@@ -131,19 +103,15 @@ void mars::calcGravityDirection(al::LiveActor* player) {
                     gravity = {gravity.x/magnitude, gravity.y/magnitude, gravity.z/magnitude};
                     al::normalize(&gravity);
                     al::setGravity(player, gravity);
-                    sead::Vector3f invertedGravity = {-gravity.x, -gravity.y, -gravity.z};
-                    storedUpDir = invertedGravity;
                     return;
                 }
                 case Wedge: {
-                    isVertAbsorber = false;
                     float radius = 500;
                     // pushes gravity in -y +z direction from +y -z edge
-                    gravity = {0, -dist.y - radius*scale.y, -dist.z - radius*scale.z};
+                    gravity = {0, -dist.y - radius*scale.y, dist.z - radius*scale.z};
                     break;
                 }
                 case Disk: {
-                    isVertAbsorber = false;
                     // base radius is 250; scaling the area will also scale the radius.
                     float R = 250;
                     sead::Vector3f dist = {areaPos.x - playerTrans->x, areaPos.y - playerTrans->y, areaPos.z - playerTrans->z};
@@ -163,13 +131,11 @@ void mars::calcGravityDirection(al::LiveActor* player) {
                     gravity = {gravity.x/magnitude, gravity.y/magnitude, gravity.z/magnitude};
                     al::normalize(&gravity);
                     al::setGravity(player, gravity);
-                    sead::Vector3f invertedGravity = {-gravity.x, -gravity.y, -gravity.z};
-                    storedUpDir = invertedGravity;
                     return;
 
                 }
                 case Cone: {
-                    isVertAbsorber = false;
+                    // recommended to use AreaCubeBase for this one
                     float r = 250;
                     float h = 250;
                     sead::Vector3f dist = {areaPos.x - playerTrans->x, areaPos.y - playerTrans->y, areaPos.z - playerTrans->z};
@@ -191,8 +157,6 @@ void mars::calcGravityDirection(al::LiveActor* player) {
                     gravity = {gravity.x/magnitude, gravity.y/magnitude, gravity.z/magnitude};
                     al::normalize(&gravity);
                     al::setGravity(player, gravity);
-                    sead::Vector3f invertedGravity = {-gravity.x, -gravity.y, -gravity.z};
-                    storedUpDir = invertedGravity;
                     return;
                 }
                 
@@ -204,28 +168,21 @@ void mars::calcGravityDirection(al::LiveActor* player) {
             al::normalize(&gravity);
             al::setGravity(player, gravity);
             sead::Vector3f invertedGravity = {-gravity.x, -gravity.y, -gravity.z};
-            storedUpDir = invertedGravity;
-        } else if (!gravityArea && !rs::isPlayer2D(player)) {
-            ::isGravity = false;
-            isVertAbsorber = false;
+        } else if (!gravityArea && !rs::isPlayer2D(player)) { // sticks to collision normals when not in 2D
             PlayerActorHakoniwa* playerActor = al::getPlayerActor(player, 0);
             PlayerColliderHakoniwa* playerCollision = playerActor->mPlayerCollider;
             sead::Vector3f gravity = {0,0,0};
             if (rs::calcOnGroundNormalOrGravityDir(&gravity, playerActor, playerCollision)) {
-                storedUpDir = {0,1.0,0.0};
                 gravity = {-gravity.x, -gravity.y, -gravity.z};
                 al::normalize(&gravity);
                 al::setGravity(player, gravity);
             }
         }
-    } else if (!rs::isPlayer2D(player)) {
-        ::isGravity = false;
-        isVertAbsorber = false;
+    } else if (!rs::isPlayer2D(player)) { // sticks to collision normals when not in 2D
         PlayerActorHakoniwa* playerActor = al::getPlayerActor(player, 0);
         PlayerColliderHakoniwa* playerCollision = playerActor->mPlayerCollider;
         sead::Vector3f gravity = {0,0,0};
         if (rs::calcOnGroundNormalOrGravityDir(&gravity, playerActor, playerCollision)) {
-            storedUpDir = {0,1.0,0.0};
             gravity = {-gravity.x, -gravity.y, -gravity.z};
             al::normalize(&gravity);
             al::setGravity(player, gravity);
@@ -273,26 +230,6 @@ sead::Matrix34f* mars::calcRotMtx(sead::Matrix34f* matrix, sead::Matrix33f rot) 
         }
     }
     return matrix;
-}
-
-sead::Matrix33f mars::QuatToMtx33(sead::Quatf* quat) {
-    sead::Matrix33f mtx;
-    mtx.m[0][0] = 1-2*quat->y*quat->y - 2*quat->z*quat->z;
-    mtx.m[0][1] = 2*quat->x*quat->y - 2*quat->z*quat->w;
-    mtx.m[0][2] = 2*quat->x*quat->z + 2*quat->y*quat->w;
-    mtx.m[1][0] = 2*quat->x*quat->y + 2*quat->z*quat->w;
-    mtx.m[1][1] = 1-2*quat->x*quat->x - 2*quat->z*quat->z;
-    mtx.m[1][2] = 2*quat->y*quat->z - 2*quat->x*quat->w;
-    mtx.m[2][0] = 2*quat->x*quat->z - 2*quat->y*quat->w;
-    mtx.m[2][1] = 2*quat->y*quat->z + 2*quat->x*quat->w;
-    mtx.m[2][2] = 1-2*quat->x*quat->x - 2*quat->y*quat->y;
-    /*
-    for (int column = 0; column < 3; column++) {
-        for (int row = 0; row < 3; row++) {
-            mtx.m[row][column] /= sqrt(mtx.m[0][column]*mtx.m[0][column] + mtx.m[1][column]*mtx.m[1][column] + mtx.m[2][column]*mtx.m[2][column]);
-        }
-    }*/
-    return mtx;
 }
 
 void initHackCapHook(al::LiveActor *cappy) {
