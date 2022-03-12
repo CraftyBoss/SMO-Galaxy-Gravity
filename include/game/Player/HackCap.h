@@ -194,7 +194,7 @@ public:
     void exeReturn(void);
     void exeBlow(void);
 
-    unsigned char padding_118[0x118 - HACKSIZE];
+    unsigned char padding_118[0x08];
     al::LiveActor *mActorA; // 0x118
     unsigned char padding_8[0x8];
     PlayerActorHakoniwa *mPlayerActor; // 0x128

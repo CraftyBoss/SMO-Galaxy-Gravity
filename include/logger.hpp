@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SocketBase.hpp"
-#include "privateIps.hpp"
 
 class Logger;
 extern Logger *gLogger;

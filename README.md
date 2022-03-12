@@ -48,7 +48,7 @@ After a successful build, simply transfer the `atmosphere` folder located inside
 - [OdysseyReversed](https://github.com/shibbo/OdysseyReversed) original decomp repo
 - [open-ead](https://github.com/open-ead/sead) sead Headers
 - [Bryce](https://github.com/brycewithfiveunderscores/Starlight-SMO-Example/) Original Starlight fork for SMO
-- [Mars2020](http://github.com/Mars2032) Created gravity area system
+- [Mars2030](http://github.com/Mars2032) Created gravity area system
 
 # Starlight (Original README)
 An enviroment for linking to Splatoon 2 executable and implementing hooks.
