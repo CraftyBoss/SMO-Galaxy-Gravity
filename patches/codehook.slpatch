@@ -1,5 +1,6 @@
 [version=100, target=main]
-StageScene::control+18:
+4CC364: // StageScene::control+1C
+    MOV X0, X19
     BL stageSceneHook
 4C8648: // hook to the init of a stage to modify certain conditions (we also have access to SceneInitInfo)
     BL stageInitHook
@@ -60,8 +61,8 @@ B59E28: // sead::system::print
 4a5878:
     bl ProjectAreaFactory
 
-// PlayerActorHakoniwa::movement+A30 prevents PlayerJointKeeper from updating 
-41E764:
+// PlayerJointControlKeeper::update+C0 prevents PlayerJointControlGroundPose from updating 
+455230:
     NOP
 
 // Sets all Actors who have TQSV to have TQGSV

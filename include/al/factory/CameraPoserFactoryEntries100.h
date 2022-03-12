@@ -34,9 +34,9 @@ namespace al {
 // 0xE in size
 static al::NameToCreator<al::createCameraPoser> poserEntries[] = {
     // Vanilla Posers
-    {"制限付きフォロー", &al::createCameraPoserFunction<CameraPoserFollowLimit>},
-    {"制限付き平行", &al::createCameraPoserFunction<CameraPoserFollowLimit>},
-    {"2D平行", &al::createCameraPoserFunction<CameraPoserFollowLimit>},
+    {"制限付きフォロー",&cc::createCustomCameraPoser<cc::CameraPoserCustom>},
+    {"制限付き平行", &cc::createCustomCameraPoser<cc::CameraPoserCustom>},
+    {"2D平行", &cc::createCustomCameraPoser<cc::CameraPoserCustom>},
     {"固定", &al::createCameraPoserFunction<al::CameraPoserFix>},
     {"完全固定", &al::createCameraPoserFunction<al::CameraPoserFix>},
     {"出入口専用固定", &al::createCameraPoserFunction<al::CameraPoserFix>},

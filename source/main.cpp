@@ -8,6 +8,8 @@
 #include "al/util/StringUtil.h"
 #include "cameras/CameraPoserCustom.h"
 #include "debugMenu.hpp"
+#include "game/Player/HackCap.h"
+#include "game/Player/PlayerJointControlGroundPose.h"
 #include "mars/gravity.h"
 
 static bool showMenu = true;
@@ -130,35 +132,27 @@ ulong threadInit()
     return 0x20;
 }
 
-void stageSceneHook()
+void stageSceneHook(StageScene *stageScene)
 {
-
-    __asm("MOV X19, X0");
-
-    StageScene *stageScene;
-    __asm("MOV %[result], X0"
-          : [result] "=r"(stageScene));
+    stageScene->stageSceneLayout->updatePlayGuideMenuText();
 
     al::PlayerHolder *pHolder = al::getScenePlayerHolder(stageScene);
-    PlayerActorHakoniwa *p1 = al::tryGetPlayerActor(pHolder, 0);
+    PlayerActorHakoniwa* p1 = al::tryGetPlayerActor(pHolder, 0);
 
     isInGame = true;
 
     if (p1) {
         mars::calcGravityDirection(p1);
     }
+
     if (p1->mHackCap) {
         mars::calcGravityDirection(p1->mHackCap);
     }
-    
 
     if (al::isPadTriggerUp(-1)) // enables/disables debug menu
     {
         showMenu = !showMenu;
     }
-
-    __asm("MOV X0, %[input]"
-          : [input] "=r"(stageScene));
 }
 
 void seadPrintHook(const char *fmt, ...) // hook for replacing sead::system::print with our custom logger
