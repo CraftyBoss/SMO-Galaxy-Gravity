@@ -13,7 +13,7 @@
 #include "game/Player/PlayerJointControlGroundPose.h"
 #include "mars/gravity.h"
 
-static bool showMenu = true;
+static bool showMenu = false;
 
 static bool isInGame = false;
 
@@ -76,9 +76,9 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
 
     if (curScene && isInGame) {
 
-        gTextWriter->beginDraw();
-        
         drawBackground((agl::DrawContext *)drawContext);
+
+        gTextWriter->beginDraw();
 
         gTextWriter->setCursorFromTopLeft(startPos);
 
@@ -90,6 +90,8 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
             if (updater && updater->mTicket) {
                 curPoser = updater->mTicket->mPoser;
             }
+        } else {
+            gTextWriter->printf("There is no director.\n");
         }
 
         if (curPoser) {
@@ -100,6 +102,8 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
                 gTextWriter->printf("Verical Angle: %f\n", poserCustom->mAngleV);
                 gTextWriter->printf("Horizontal Angle: %f\n", poserCustom->mAngleH);
             }
+        } else {
+            gTextWriter->printf("There is no camera poser.\n");
         }
 
         isInGame = false;

@@ -10,6 +10,7 @@
 #include "al/area/AreaObj.h"
 #include "al/area/AreaObjGroup.h"
 #include "al/area/AreaObjDirector.h"
+#include "sead/math/seadMathNumbers.h"
 #include "rs/util.hpp"
 #include <cmath>
 #include "al/camera/CameraAngleVerticalCtrl.h"
@@ -71,9 +72,28 @@ sead::Vector3f calcGravityDirection(sead::Vector3f* playerTrans, al::AreaObj *gr
                 break;
             }
             case Parallel: {
-                // rotate the cube to the direction wanted. default is down
-                gravity = {0.0, -1.0, 0.0};
-                break;
+                // rotate the cube to the direction wanted. default is down 
+                // validAngleDegree should be -1 if you want the whole area to be valid. Works best on Cylinder areas
+                float validAngleDegree;
+                al::tryGetAreaObjArg(&validAngleDegree, gravityArea, "ValidAngleDeg");
+                gLogger->LOG("ValidAngleDeg: %f\n", validAngleDegree);
+                float distAngle = acos(-dist.x/sead::Vector3f(-dist.x,0,-dist.z).length()) * 180/sead::numbers::pi_v<float>;
+                if (al::sign(dist.z) == -1) {
+                    distAngle = 360.0f - distAngle;
+                }
+                gLogger->LOG("distAngle: %f\n", distAngle);
+                if (validAngleDegree > 0) {
+                    if  (distAngle <= validAngleDegree) {
+                        gravity = -sead::Vector3f::ey;
+                        break;
+                    } else {
+                        return sead::Vector3f::zero;
+                    }
+                } else {
+                    gravity = -sead::Vector3f::ey;
+                    break;
+                }
+                
             }
             case Cylindrical: {
                 gravity = {dist.x, 0.0, dist.z};
@@ -155,9 +175,10 @@ void calcActorGravity(al::LiveActor* actor) {
             if (curArea->isInVolume(*trans)) {
                 int curPriority = curArea->mPriority;
                 // only calc gravity if our priority is greater than or equal to the highest priority
-                if (gravityDirs.size() > gravityCount && curPriority >= highestPriority) {
-                    sead::Vector3f result = mars::calcGravityDirection(trans, curArea);
-                    if (result != sead::Vector3f::zero) {
+                // sorry crafty but i need to anyway lol
+                sead::Vector3f result = mars::calcGravityDirection(trans, curArea);
+                if (result != sead::Vector3f::zero) {
+                    if (gravityDirs.size() > gravityCount && curPriority >= highestPriority) {
                         // if we have a new highest priority, update priority and highest gravity vector
                         if (highestPriority < curPriority) {
                             highestPriority = curPriority;
