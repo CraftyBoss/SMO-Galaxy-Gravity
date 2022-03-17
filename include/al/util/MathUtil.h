@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sead/math/seadVector.h>
+#include "al/LiveActor/LiveActor.h"
 
 namespace al {
 float normalize(float, float, float);
@@ -44,4 +45,16 @@ void rotateVectorDegree(sead::Vector3f *output, const sead::Vector3f &direction,
 void rotateVectorDegreeX(sead::Vector3f*, float);
 void rotateVectorDegreeY(sead::Vector3f*, float);
 void rotateVectorDegreeZ(sead::Vector3f*, float);
+
+float calcAngleToTargetH(LiveActor const*,sead::Vector3f const&);
+float calcAngleToTargetV(LiveActor const*,sead::Vector3f const&);
+float calcAngleRadian(sead::Vector3f const&,sead::Vector3f const&);
+float calcAngleDegree(sead::Vector3f const&,sead::Vector3f const&);
+float calcAngleDegree(sead::Vector2f const&,sead::Vector2f const&);
+float calcAngleOnPlaneRadian(sead::Vector3f const &from,sead::Vector3f const &to,sead::Vector3f const &axis);
+float calcAngleOnPlaneDegree(sead::Vector3f const &from,sead::Vector3f const &to,sead::Vector3f const &axis);
+float calcAngleOnPlaneDegreeOrZero(sead::Vector3f const &from,sead::Vector3f const &to,sead::Vector3f const &axis);
+float calcAngleSignOnPlane(sead::Vector3f const &from,sead::Vector3f const &to,sead::Vector3f const &axis);
+bool tryCalcAngleDegree(float *,sead::Vector3f const&,sead::Vector3f const&);
+bool tryCalcAngleOnPlaneDegree(float *,sead::Vector3f const &from,sead::Vector3f const &to,sead::Vector3f const &axis);
 };  // namespace al

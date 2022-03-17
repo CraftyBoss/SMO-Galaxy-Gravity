@@ -28,12 +28,6 @@ namespace al {
                 this->factoryCount = 0;
             };
 
-            virtual const char *convertName(char const *name) const override
-            {
-                gLogger->LOG("Creating Camera: %s\n", name);
-                return name;
-            };
-
             virtual CameraPoser *createEntranceCameraPoser(void) const;
             // return new al::CameraPoserEntrance(スタート);
 

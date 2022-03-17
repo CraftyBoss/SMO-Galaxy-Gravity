@@ -13,7 +13,7 @@ namespace al
             void createBuffer(void);
             void createBuffer(int);
             void registerAreaObj(al::AreaObj *);
-            void getAreaObj(int) const;
+            al::AreaObj *getAreaObj(int) const;
             al::AreaObj *getInVolumeAreaObj(sead::Vector3f const &) const;
 
             const char *mGroupName;

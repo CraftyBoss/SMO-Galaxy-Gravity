@@ -61,13 +61,13 @@ typedef u32 Result;
 typedef u32 Handle;
 typedef void (*ThreadFunc)(void*);
 
-enum Direction
-{
-    RIGHT = 0,
-    LEFT  = 1,
-    UP    = 2,
-    DOWN  = 3
-};
+// enum Direction
+// {
+//     RIGHT = 0,
+//     LEFT  = 1,
+//     UP    = 2,
+//     DOWN  = 3
+// };
 
 struct Rect
 {

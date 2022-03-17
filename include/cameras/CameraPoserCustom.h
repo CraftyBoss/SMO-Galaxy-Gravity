@@ -21,12 +21,14 @@ namespace cc {
             virtual void update(void) override;
             virtual void movement(void) override;
 
-            float mOffsetY = 120.0f; // 0x140
-            float mDist = 1600.0f; // 0x144
-            float mAngleV = 0.0f;   // 0x148
-            float mAngleH = 0.0f;   // 0x148
-            float mSnapSpeed = 0.15f; // 0x14C
-            bool mIsResetAngleIfSwitchTarget = false;  // 0x150
-            sead::Vector3f mPrevUpDir = sead::Vector3f::ey;
+            float mOffsetY = 120.0f;
+            float mDist = 1600.0f;
+            float mAngleV = 0.0f;
+            float mAngleH = 0.0f;
+            float mSnapSpeed = 0.15f;
+            float mDiffV = 0.0f;
+            float mDiffH = 0.0f;
+            bool mIsResetAngleIfSwitchTarget = false;
+            sead::Vector3f mPrevTargetDir = sead::Vector3f::ey;
     };
 }

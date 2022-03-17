@@ -107,15 +107,21 @@ void CameraPoserCustom::update(void) {
     sead::Vector3f rightAxis;
     rightAxis.setCross(targetDir, mCameraUp);
 
+    mDiffH = al::calcAngleOnPlaneDegree(mPrevTargetDir, targetDir, mCameraUp);
+
+    mDiffV = al::calcAngleOnPlaneDegree(mPrevTargetDir, targetDir, rightAxis);
+
     float stickSpeed = alCameraPoserFunction::getStickSensitivityScale(this) * alCameraPoserFunction::getStickSensitivityLevel(this);
 
     al::rotateVectorDegree(&rotatedVec, rotatedVec, mCameraUp, playerInput.x * -stickSpeed); // Horizontal Rotation
 
     al::rotateVectorDegree(&rotatedVec, rotatedVec, rightAxis, playerInput.y * -stickSpeed); // Vertical Rotation
     
-    normalize2(rotatedVec, mDist); // divides length of vector by distance and multiplies result into input vector 
+    normalize2(rotatedVec, mDist); // divides length of vector by distance and multiplies result into input vector
 
     mPosition = mTargetTrans + rotatedVec;
+
+    mPrevTargetDir = targetDir;
 }
 
 void CameraPoserCustom::movement() {

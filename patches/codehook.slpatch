@@ -41,9 +41,9 @@ B59E28: // sead::system::print
     RET
 
 // Snapshot Button Disabling
-//576FB8: // rs::isTriggerSnapShotMode
-//    MOV X0, #0
-//    RET
+576FB8: // rs::isTriggerSnapShotMode
+    MOV X0, #0
+    RET
 
 // Mars Gravity hooks
 

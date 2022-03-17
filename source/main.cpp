@@ -4,6 +4,7 @@
 #include "al/camera/CameraDirector.h"
 #include "al/camera/CameraPoser.h"
 #include "al/util.hpp"
+#include "al/util/InputUtil.h"
 #include "al/util/LiveActorUtil.h"
 #include "al/util/StringUtil.h"
 #include "cameras/CameraPoserCustom.h"
@@ -67,24 +68,19 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
 
     gTextWriter->mViewport = viewport;
 
-    gTextWriter->mColor = sead::Color4f(
-        1.f,
-        1.f,
-        1.f,
-        0.8f);
+    gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, 0.8f);
+
+    sead::Vector2f startPos = sead::Vector2f(10.f, (dispHeight / 3) + 30.f);
 
     al::Scene *curScene = curSequence->curScene;
 
-    if (curScene && isInGame)
-    {
-
-        drawBackground((agl::DrawContext *)drawContext);
+    if (curScene && isInGame) {
 
         gTextWriter->beginDraw();
+        
+        drawBackground((agl::DrawContext *)drawContext);
 
-        gTextWriter->setCursorFromTopLeft(sead::Vector2f(10.f, (dispHeight / 3) + 30.f));
-
-        gTextWriter->setScaleFromFontHeight(20.f);
+        gTextWriter->setCursorFromTopLeft(startPos);
 
         al::CameraPoser *curPoser;
 
@@ -104,7 +100,6 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
                 gTextWriter->printf("Verical Angle: %f\n", poserCustom->mAngleV);
                 gTextWriter->printf("Horizontal Angle: %f\n", poserCustom->mAngleH);
             }
-
         }
 
         isInGame = false;
@@ -142,17 +137,17 @@ void stageSceneHook(StageScene *stageScene)
     isInGame = true;
 
     if (p1) {
-        mars::calcGravityDirection(p1);
+        mars::calcActorGravity(p1);
     }
 
     if (p1->mHackCap) {
-        mars::calcGravityDirection(p1->mHackCap);
+        mars::calcActorGravity(p1->mHackCap);
     }
 
-    if (al::isPadTriggerUp(-1)) // enables/disables debug menu
-    {
-        showMenu = !showMenu;
-    }
+    // if (al::isPadTriggerUp(-1)) // enables/disables debug menu
+    // {
+    //     showMenu = !showMenu;
+    // }
 }
 
 void seadPrintHook(const char *fmt, ...) // hook for replacing sead::system::print with our custom logger
