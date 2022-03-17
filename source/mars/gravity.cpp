@@ -179,6 +179,7 @@ void calcActorGravity(al::LiveActor* actor) {
         finalGravity = gravityDirs[0];
 
         if (gravityCount > 1) {
+            for (size_t i = 0; i < gravityCount; i++) {gravityDirs[i] /= pow(gravityDirs[i].length(),2);}
             for (size_t i = 0; i < gravityCount - 1; i++) {
                 gravityDirs[i + 1] = gravityDirs[i] + gravityDirs[i + 1];
                 finalGravity = gravityDirs[i+1];
