@@ -13,7 +13,7 @@
 #include "game/Player/PlayerJointControlGroundPose.h"
 #include "mars/gravity.h"
 
-static bool showMenu = false;
+static bool showMenu = true;
 
 static bool isInGame = false;
 
@@ -80,6 +80,10 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
 
         gTextWriter->beginDraw();
 
+        gTextWriter->setCursorFromTopLeft(sead::Vector2f(10.f, 10.f));
+
+        gTextWriter->printf("FPS: %d\n", static_cast<int>(round(Application::sInstance->mFramework->calcFps())));
+
         gTextWriter->setCursorFromTopLeft(startPos);
 
         al::CameraPoser *curPoser;
@@ -93,6 +97,18 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
         } else {
             gTextWriter->printf("There is no director.\n");
         }
+
+        al::PlayerHolder* pHolder = al::getScenePlayerHolder(curScene);
+
+        PlayerActorHakoniwa* p1 = al::tryGetPlayerActor(pHolder, 0);
+
+        sead::Vector3f* pTrans = al::getTrans(p1);
+        sead::Vector3f* pVel = al::getVelocity(p1);
+        float velH = al::calcSpeedH(p1);
+        float velV = al::calcSpeedV(p1);
+        
+        gTextWriter->printf("Player Pos:\n%.3f   %.3f   %.3f\n", pTrans->x,pTrans->y,pTrans->z);
+        gTextWriter->printf("Player Velocity:\n%.3f   %.3f   %.3f\nHorizontal: %.3f   Vertical: %.3f\n", pVel->x,pVel->y,pVel->z, velH, velV);
 
         if (curPoser) {
             gTextWriter->printf("Camera Poser Name: %s\n", curPoser->getName());
@@ -148,10 +164,14 @@ void stageSceneHook(StageScene *stageScene)
         mars::calcActorGravity(p1->mHackCap);
     }
 
-    // if (al::isPadTriggerUp(-1)) // enables/disables debug menu
-    // {
-    //     showMenu = !showMenu;
-    // }
+
+    if (al::isPadTriggerUp(-1)) // enables/disables debug menu
+    {
+         showMenu = !showMenu;
+    }
+    if (al::isPadTriggerLeft(-1)) {
+        al::setVelocityZero(p1);
+    }
 }
 
 void seadPrintHook(const char *fmt, ...) // hook for replacing sead::system::print with our custom logger
