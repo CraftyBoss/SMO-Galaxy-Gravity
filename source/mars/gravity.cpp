@@ -227,8 +227,8 @@ void calcActorGravity(al::LiveActor* actor) {
 }
 
 sead::Vector3f calcActorVel(al::LiveActor* actor, sead::Vector3f gravity) {
-    sead::Vector3f vel = *al::getVelocity(actor);
-    sead::Vector3f* actorGravity = al::getGravity(actor);
+    sead::Vector3f vel = al::getVelocity(actor);
+    sead::Vector3f* actorGravity = &al::getGravity(actor);
     float angle = al::calcAngleDegree(*actorGravity, gravity);
     if (angle > 75 && angle < 115) {
         vel = -3*gravity;

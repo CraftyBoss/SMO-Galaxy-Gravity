@@ -98,8 +98,8 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
 
         PlayerActorHakoniwa* p1 = al::tryGetPlayerActor(pHolder, 0);
 
-        sead::Vector3f* pTrans = al::getTrans(p1);
-        sead::Vector3f* pVel = al::getVelocity(p1);
+        sead::Vector3f* pTrans = &al::getTrans(p1);
+        sead::Vector3f* pVel = &al::getVelocity(p1);
         float velH = al::calcSpeedH(p1);
         float velV = al::calcSpeedV(p1);
         

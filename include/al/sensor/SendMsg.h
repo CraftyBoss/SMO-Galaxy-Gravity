@@ -1,16 +1,19 @@
 #pragma once
 
+#include "math/seadMatrix.h"
 #include "sead/math/seadVector.h"
-
-#include "HitSensor.h"
-#include "SensorMsg.h"
 
 namespace al
 {
 
-    struct ComboCounter;
-    struct EventFlowExecutor;
-    struct ParabolicPath;
+    class ComboCounter;
+    class EventFlowExecutor;
+    class ParabolicPath;
+    class SensorMsg;
+    class HitSensor;
+    class LiveActor;
+    class ScreenPointer;
+    class ScreenPointTarget;
 
     bool sendMsgPlayerAttackTrample(al::HitSensor *, al::HitSensor *, al::ComboCounter *);
     bool sendMsgPlayerTrampleReflect(al::HitSensor *, al::HitSensor *, al::ComboCounter *);
@@ -470,7 +473,7 @@ namespace rs
     bool sendMsgHackObjUpperPunch(al::HitSensor *,al::HitSensor *);
     bool sendMsgShineGet(al::HitSensor *,al::HitSensor *);
     bool sendMsgShineGet2D(al::HitSensor *,al::HitSensor *);
-    bool sendMsgSpherePush(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,float);
+    bool sendMsgSpherePush(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,float);
     bool sendMsgSphinxJumpAttack(al::HitSensor *,al::HitSensor *);
     bool sendMsgSphinxQuizRouteKill(al::HitSensor *,al::HitSensor *);
     bool sendMsgSphinxRideAttack(al::HitSensor *,al::HitSensor *);
@@ -594,18 +597,18 @@ namespace rs
     bool sendMsgMofumofuBodyChainExplode(al::HitSensor *,al::HitSensor *,int);
     bool sendMsgMoonBasementRockThroughCollision(al::HitSensor *,al::HitSensor *,bool);
     bool sendMsgFishingWait(al::HitSensor *,al::HitSensor *,al::HitSensor *);
-    bool sendMsgFishingUpImmediately(al::HitSensor *,al::HitSensor *,sead::Matrix34<float> const&,sead::Vector3<float> const&,char const*);
-    bool sendMsgGunetterPush(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,float);
-    bool sendMsgTestPunch(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,int,int);
-    bool sendMsgTestPunchStrong(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,int,int);
+    bool sendMsgFishingUpImmediately(al::HitSensor *,al::HitSensor *,sead::Matrix34f const&,sead::Vector3f const&,char const*);
+    bool sendMsgGunetterPush(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,float);
+    bool sendMsgTestPunch(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,int,int);
+    bool sendMsgTestPunchStrong(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,int,int);
     bool sendMsgPunchGuard(al::HitSensor *,al::HitSensor *,int,int);
-    bool sendMsgTsukkunThrust(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,int,bool);
-    bool sendMsgTsukkunThrustSpin(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,int,bool);
-    bool sendMsgTsukkunThrustReflect(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,int,bool);
-    bool sendMsgTsukkunThrustCollide(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,int,bool);
-    bool sendMsgTsukkunThrustHitReflectCollide(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,int,bool);
-    bool sendMsgTsukkunThrustReflectCollide(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,int,bool);
-    bool sendMsgTsukkunThrustHole(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,sead::Vector3<float> const&);
+    bool sendMsgTsukkunThrust(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,int,bool);
+    bool sendMsgTsukkunThrustSpin(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,int,bool);
+    bool sendMsgTsukkunThrustReflect(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,int,bool);
+    bool sendMsgTsukkunThrustCollide(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,int,bool);
+    bool sendMsgTsukkunThrustHitReflectCollide(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,int,bool);
+    bool sendMsgTsukkunThrustReflectCollide(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,int,bool);
+    bool sendMsgTsukkunThrustHole(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,sead::Vector3f const&);
     bool sendMsgTsukkunThroughCollide(al::HitSensor *,al::HitSensor *);
     bool sendMsgTsukkunHoldCollide(al::HitSensor *,al::HitSensor *);
     bool sendMsgTsukkunForceCancelCollide(al::HitSensor *,al::HitSensor *);
@@ -618,31 +621,31 @@ namespace rs
     bool sendMsgRequestSphinxJump(al::HitSensor *,al::HitSensor *,float);
     bool sendMsgIgnoreTouchTarget(al::HitSensor *,al::HitSensor *);
     bool sendMsgIgnoreTouchTarget(al::ScreenPointer *,al::ScreenPointTarget *);
-    bool sendMsgInitTouchTargetInfo(al::HitSensor *,al::HitSensor *,TouchTargetInfo *,sead::Vector3<float> const*);
-    bool sendMsgInitTouchTargetInfo(al::ScreenPointer *,al::ScreenPointTarget *,TouchTargetInfo *,sead::Vector3<float> const*);
-    bool sendMsgCollisionImpulse(al::HitSensor *,al::HitSensor *,sead::Vector3<float> *,sead::Vector3<float> const&,float,sead::Vector3<float> const&,float);
+    bool sendMsgInitTouchTargetInfo(al::HitSensor *,al::HitSensor *,TouchTargetInfo *,sead::Vector3f const*);
+    bool sendMsgInitTouchTargetInfo(al::ScreenPointer *,al::ScreenPointTarget *,TouchTargetInfo *,sead::Vector3f const*);
+    bool sendMsgCollisionImpulse(al::HitSensor *,al::HitSensor *,sead::Vector3f *,sead::Vector3f const&,float,sead::Vector3f const&,float);
     bool sendMsgWhipHold(al::HitSensor *,al::HitSensor *,WhipTargetInfo *);
     bool sendMsgWhipBind(al::HitSensor *,al::HitSensor *,WhipTargetInfo *);
-    bool sendMsgWhipThrow(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&);
+    bool sendMsgWhipThrow(al::HitSensor *,al::HitSensor *,sead::Vector3f const&);
     bool sendMsgMagnet(al::HitSensor *,al::HitSensor *,bool);
     bool sendMsgMagnetBulletAttack(al::HitSensor *,al::HitSensor *,float);
     bool sendMsgDashPanel(al::HitSensor *,al::HitSensor *,int);
     bool sendMsgTrampolineCrackJump(al::HitSensor *,al::HitSensor *,float,float);
-    bool sendMsgCapTouchWall(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,sead::Vector3<float> const&);
-    bool sendMsgCapRethrow(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,sead::Vector3<float> const&,sead::Vector3<float> const&);
-    bool sendMsgCapRethrowReturnOnly(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,sead::Vector3<float> const&,sead::Vector3<float> const&);
+    bool sendMsgCapTouchWall(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,sead::Vector3f const&);
+    bool sendMsgCapRethrow(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,sead::Vector3f const&,sead::Vector3f const&);
+    bool sendMsgCapRethrowReturnOnly(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,sead::Vector3f const&,sead::Vector3f const&);
     bool sendMsgCapChangeGiant(al::HitSensor *,al::HitSensor *,float,int);
-    bool sendMsgPackunEatCancel(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,sead::Vector3<float> const&);
-    bool sendMsgPackunEatEnd(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,sead::Vector3<float> const&);
-    bool sendMsgPackunEatStartFollow(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const*);
-    bool sendMsgFireBlowerAttack(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,sead::Vector3<float> const&,float);
+    bool sendMsgPackunEatCancel(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,sead::Vector3f const&);
+    bool sendMsgPackunEatEnd(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,sead::Vector3f const&);
+    bool sendMsgPackunEatStartFollow(al::HitSensor *,al::HitSensor *,sead::Vector3f const*);
+    bool sendMsgFireBlowerAttack(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,sead::Vector3f const&,float);
     //bool sendMsgPaint(al::HitSensor *,al::HitSensor *,sead::Color4u8 const&,int,int);
     bool sendMsgPaintTexture(al::HitSensor *,al::HitSensor *,int,float,int);
-    //bool sendMsgCheckPaintClear(al::HitSensor *,al::HitSensor *,sead::Color4u8 const&,sead::Vector3<float> const&,int);
-    bool sendMsgCheckPaintAlpha(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&);
-    bool sendMsgByugoBlow(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&);
+    //bool sendMsgCheckPaintClear(al::HitSensor *,al::HitSensor *,sead::Color4u8 const&,sead::Vector3f const&,int);
+    bool sendMsgCheckPaintAlpha(al::HitSensor *,al::HitSensor *,sead::Vector3f const&);
+    bool sendMsgByugoBlow(al::HitSensor *,al::HitSensor *,sead::Vector3f const&);
     bool sendMsgHackDirectStageInit(al::HitSensor *,al::HitSensor *,IUsePlayerHack *);
-    bool sendMsgObjSnapForce(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&);
+    bool sendMsgObjSnapForce(al::HitSensor *,al::HitSensor *,sead::Vector3f const&);
     bool sendMsgCapBeamerBeam(al::HitSensor *,al::HitSensor *);
     bool sendMsgHosuiAttack(al::HitSensor *,al::HitSensor *);
     bool sendMsgHosuiAttackCollide(al::HitSensor *,al::HitSensor *);
@@ -659,19 +662,19 @@ namespace rs
     bool sendMsgBubbleWallTouch(al::HitSensor *,al::HitSensor *);
     bool sendMsgBubbleGroundTouchTrigger(al::HitSensor *,al::HitSensor *);
     bool sendMsgBubbleLauncherStart(al::HitSensor *,al::HitSensor *);
-    bool sendMsgSenobiPartsMove(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,float);
-    bool sendMsgStampTo2D(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&);
-    bool sendMsgAirExplosion(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&);
-    bool sendMsgPushVelocity(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&);
+    bool sendMsgSenobiPartsMove(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,float);
+    bool sendMsgStampTo2D(al::HitSensor *,al::HitSensor *,sead::Vector3f const&);
+    bool sendMsgAirExplosion(al::HitSensor *,al::HitSensor *,sead::Vector3f const&);
+    bool sendMsgPushVelocity(al::HitSensor *,al::HitSensor *,sead::Vector3f const&);
     bool sendMsgGhostRecordStartOk(al::HitSensor *,al::HitSensor *,char const*);
     bool sendMsgSandGeyserRaise(al::HitSensor *,al::HitSensor *,float,float);
     bool sendMsgRaceWait(al::LiveActor *);
     bool sendMsgRaceStart(al::LiveActor *);
     bool sendMsgRaceStop(al::LiveActor *);
-    bool sendMsgRaceReturnToCourse(al::LiveActor *,sead::Vector3<float> const&,sead::Vector3<float> const&);
-    bool sendMsgPlayerLookAtPosition(al::HitSensor *,al::HitSensor *,sead::Vector3<float> *);
-    bool sendMsgTargetMarkerPosition(al::HitSensor *,al::HitSensor *,sead::Vector3<float> *);
-    bool sendMsgHackBlowJump(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,float);
+    bool sendMsgRaceReturnToCourse(al::LiveActor *,sead::Vector3f const&,sead::Vector3f const&);
+    bool sendMsgPlayerLookAtPosition(al::HitSensor *,al::HitSensor *,sead::Vector3f *);
+    bool sendMsgTargetMarkerPosition(al::HitSensor *,al::HitSensor *,sead::Vector3f *);
+    bool sendMsgHackBlowJump(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,float);
     bool sendMsgGolemStampPushV(al::HitSensor *,al::HitSensor *,float);
     bool sendMsgGolemStampPushH(al::HitSensor *,al::HitSensor *,float);
     bool sendMsgRequestPlayerWaitAnimDigPoint(al::HitSensor *,al::HitSensor *);
@@ -679,20 +682,20 @@ namespace rs
     bool sendMsgPlayerItemGetAll(al::HitSensor *,al::HitSensor *);
     bool sendMsgPlayerItemGetAll2D(al::HitSensor *,al::HitSensor *);
     bool sendMsgTRexAttackAll(al::HitSensor *,al::HitSensor *);
-    bool sendMsgSeedTouch(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,sead::Vector3<float> const&);
-    bool sendMsgSphinxRideAttackTouchThrough(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,sead::Vector3<float> const&);
-    bool sendMsgSphinxRideAttackTouch(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&,sead::Vector3<float> const&);
+    bool sendMsgSeedTouch(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,sead::Vector3f const&);
+    bool sendMsgSphinxRideAttackTouchThrough(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,sead::Vector3f const&);
+    bool sendMsgSphinxRideAttackTouch(al::HitSensor *,al::HitSensor *,sead::Vector3f const&,sead::Vector3f const&);
     bool sendMsgBlockUpperPunch2D(al::HitSensor *,al::HitSensor *);
     bool sendMsgGotogotonOn(al::HitSensor *,al::HitSensor *);
     bool sendMsgGotogotonGetJumpPath(al::HitSensor *,al::HitSensor *,al::ParabolicPath *);
     bool sendMsgGotogotonGoalExist(al::HitSensor *,al::HitSensor *);
     bool sendMsgGotogotonGoalMatch(al::HitSensor *,al::HitSensor *,GotogotonMark const*);
-    bool sendMsgBossMagmaBreathForce(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&);
+    bool sendMsgBossMagmaBreathForce(al::HitSensor *,al::HitSensor *,sead::Vector3f const&);
     bool sendMsgBossMagmaCatchPlayer(al::HitSensor *,al::HitSensor *);
     bool sendMsgBossMagmaReleasePlayer(al::HitSensor *,al::HitSensor *);
     bool sendMsgBossMagmaDeadDemoStart(al::HitSensor *,al::HitSensor *);
-    bool sendMsgBossMagmaDeadDemoEnd(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&);
-    bool sendMsgBossMagmaResetPos(al::HitSensor *,al::HitSensor *,sead::Vector3<float> const&);
+    bool sendMsgBossMagmaDeadDemoEnd(al::HitSensor *,al::HitSensor *,sead::Vector3f const&);
+    bool sendMsgBossMagmaResetPos(al::HitSensor *,al::HitSensor *,sead::Vector3f const&);
     bool sendMsgBossMagmaQueryToBubble(al::HitSensor *,al::HitSensor *);
     bool sendMsgCheckFishingTarget(al::HitSensor *,al::HitSensor *,FishingFish const*);
     bool sendMsgPushToPlayerAndKillVelocityToTarget(al::LiveActor *,al::HitSensor *,al::HitSensor *);

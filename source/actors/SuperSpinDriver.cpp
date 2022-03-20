@@ -3,6 +3,7 @@
 #include <math.h>
 #include "al/LiveActor/LiveActor.h"
 #include "al/rail/RailRider.h"
+#include "al/util.hpp"
 #include "al/util/LiveActorUtil.h"
 #include "al/util/MathUtil.h"
 #include "al/util/NerveUtil.h"
@@ -314,9 +315,16 @@ void SuperSpinDriver::exeShoot(void) {
 
         railRider->move();
 
-        rs::setPuppetTrans(mPlayerPuppet, railRider->mCurRailPos);
+        sead::Vector3f* curTrans = rs::getPuppetTrans(mPlayerPuppet);
 
-        rs::setPuppetUp(mPlayerPuppet, railRider->mCurRailDir);
+        al::lerpVec(curTrans, *curTrans, railRider->mCurRailPos, 0.25); // interpolate new position for smoother movement
+
+        sead::Vector3f puppetUp;
+        rs::calcPuppetUp(&puppetUp, mPlayerPuppet);
+
+        al::lerpVec(&puppetUp, puppetUp, railRider->mCurRailDir, 0.25); // interpolate up direction for smoother rotations
+
+        rs::setPuppetUp(mPlayerPuppet, puppetUp);
 
         if (railRider->isReachedGoal()) {
 
