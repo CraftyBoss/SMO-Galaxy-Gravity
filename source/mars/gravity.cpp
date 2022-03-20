@@ -11,6 +11,7 @@
 #include "al/area/AreaObj.h"
 #include "al/area/AreaObjGroup.h"
 #include "al/area/AreaObjDirector.h"
+#include "sead/math/seadMathNumbers.h"
 #include "rs/util.hpp"
 #include <cmath>
 #include "al/camera/CameraAngleVerticalCtrl.h"
@@ -26,6 +27,7 @@
 enum GravityType : int {
     Spherical = 0, Cuboidal = 1, Parallel = 2, Cylindrical = 3, Torus = 4, Wedge = 5, Disk = 6, Cone = 7
 };
+
 
 namespace mars {
 sead::Vector3f calcGravityDirection(sead::Vector3f* playerTrans, al::AreaObj *gravityArea) {
@@ -72,9 +74,26 @@ sead::Vector3f calcGravityDirection(sead::Vector3f* playerTrans, al::AreaObj *gr
                 break;
             }
             case Parallel: {
-                // rotate the cube to the direction wanted. default is down
-                gravity = {0.0, -1.0, 0.0};
-                break;
+                // rotate the cube to the direction wanted. default is down 
+                // validAngleDegree should be -1 if you want the whole area to be valid. Works best on Cylinder areas
+                float validAngleDegree;
+                al::tryGetAreaObjArg(&validAngleDegree, gravityArea, "ValidAngleDeg");
+                float distAngle = al::calcAngleDegree(sead::Vector3f(-dist.x,0,-dist.z),sead::Vector3f::ex);
+                if (al::sign(dist.z) == -1) {
+                    distAngle = 360.0f - distAngle;
+                }
+                if (validAngleDegree > 0) {
+                    if  (distAngle <= validAngleDegree) {
+                        gravity = -sead::Vector3f::ey;
+                        break;
+                    } else {
+                        return sead::Vector3f::zero;
+                    }
+                } else {
+                    gravity = -sead::Vector3f::ey;
+                    break;
+                }
+                
             }
             case Cylindrical: {
                 gravity = {dist.x, 0.0, dist.z};
@@ -124,7 +143,7 @@ sead::Vector3f calcGravityDirection(sead::Vector3f* playerTrans, al::AreaObj *gr
             
         }
         if (isInverted) {
-            gravity = {-gravity.x, -gravity.y, -gravity.z};
+            gravity = -gravity;
         }
         sead::Matrix33CalcCommon<float>::inverse(mtx, mtx);
         sead::Vector3CalcCommon<float>::mul(gravity,mtx,gravity);
@@ -156,9 +175,10 @@ void calcActorGravity(al::LiveActor* actor) {
             if (curArea->isInVolume(*trans)) {
                 int curPriority = curArea->mPriority;
                 // only calc gravity if our priority is greater than or equal to the highest priority
-                if (gravityDirs.size() > gravityCount && curPriority >= highestPriority) {
-                    sead::Vector3f result = mars::calcGravityDirection(trans, curArea);
-                    if (result != sead::Vector3f::zero) {
+                // sorry crafty but i need to anyway lol
+                sead::Vector3f result = mars::calcGravityDirection(trans, curArea);
+                if (result != sead::Vector3f::zero) {
+                    if (gravityDirs.size() > gravityCount && curPriority >= highestPriority) {
                         // if we have a new highest priority, update priority and highest gravity vector
                         if (highestPriority < curPriority) {
                             highestPriority = curPriority;
@@ -180,6 +200,7 @@ void calcActorGravity(al::LiveActor* actor) {
         finalGravity = gravityDirs[0];
 
         if (gravityCount > 1) {
+            for (size_t i = 0; i < gravityCount; i++) {gravityDirs[i] /= pow(gravityDirs[i].length(),2);}
             for (size_t i = 0; i < gravityCount - 1; i++) {
                 gravityDirs[i + 1] = gravityDirs[i] + gravityDirs[i + 1];
                 finalGravity = gravityDirs[i+1];
@@ -203,6 +224,16 @@ void calcActorGravity(al::LiveActor* actor) {
             al::setGravity(actor, gravity);
         }
     }
+}
+
+sead::Vector3f calcActorVel(al::LiveActor* actor, sead::Vector3f gravity) {
+    sead::Vector3f vel = *al::getVelocity(actor);
+    sead::Vector3f* actorGravity = al::getGravity(actor);
+    float angle = al::calcAngleDegree(*actorGravity, gravity);
+    if (angle > 75 && angle < 115) {
+        vel = -3*gravity;
+    }
+    return vel;
 }
 
 void calcControlGravityDir(al::LiveActor *player, al::LiveActor *cap) {

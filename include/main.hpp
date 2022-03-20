@@ -20,6 +20,7 @@
 #include "game/GameData/GameDataFunction.h"
 #include "game/Actors/Shine.h"
 #include "game/HakoniwaSequence/HakoniwaSequence.h"
+#include "game/System/Application.h"
 
 #include "rs/util.hpp"
 

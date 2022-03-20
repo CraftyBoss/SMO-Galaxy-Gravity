@@ -74,3 +74,7 @@ B59E28: // sead::system::print
 // inits hack cap actor with TQGSV instead
 4463D8:
     BL initHackCapHook
+
+// funny string change
+018ad068:
+    650070006900630020004d0053004200540020006600610069006c000000
