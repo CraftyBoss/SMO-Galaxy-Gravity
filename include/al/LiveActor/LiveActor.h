@@ -95,6 +95,22 @@ namespace al
 
         virtual void updateCollider();
 
+        void initRailKeeper(al::ActorInitInfo const&, char const*);
+        
+        void initCollider(float, float, uint);
+        
+        void initItemKeeper(int);
+
+        void initScoreKeeper(void);
+
+        void initActorPrePassLightKeeper(al::ActorPrePassLightKeeper*);
+        
+        void initActorOcclusionKeeper(al::ActorOcclusionKeeper*);
+        
+        void initSubActorKeeper(al::SubActorKeeper*);
+
+        void initSceneInfo(al::ActorSceneInfo*);
+
         const char *mActorName;                                // 0x48
         al::ActorPoseKeeperBase *mPoseKeeper;                  // 0x50
         al::ActorExecuteInfo *mLayoutExecuteInfo;              // 0x58

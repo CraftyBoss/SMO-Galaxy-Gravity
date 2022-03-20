@@ -1,13 +1,15 @@
 #pragma once
 
-#include <sead/math/seadMatrix.h>
-#include <sead/math/seadQuat.h>
-#include <sead/math/seadVector.h>
-#include <sead/prim/seadSafeString.h>
+#include <math/seadMatrix.h>
+#include <math/seadQuat.h>
+#include <math/seadVector.h>
+#include <prim/seadSafeString.h>
 #include "al/LiveActor/LiveActor.h"
 #include "al/async/FunctorBase.h"
 #include "al/collision/Collider.h"
 #include "game/Player/PlayerActorHakoniwa.h"
+#include "al/layout/LayoutActor.h"
+#include "al/layout/LayoutInitInfo.h"
 
 typedef unsigned int uint;
 
@@ -25,7 +27,9 @@ namespace al {
     void onSyncAlphaMaskSubActor(LiveActor*, const LiveActor*);
     void setMaterialProgrammable(LiveActor*);
     void startAction(LiveActor*, char const*);
-    void startHitReaction(LiveActor*, char const*);
+    void startAction(IUseLayoutAction*, const char *, const char *);
+    void startFreezeActionEnd(IUseLayoutAction *,char const*,char const*);
+    void startHitReaction(const LiveActor*, char const*);
     void invalidateClipping(LiveActor *);
     void validateClipping(LiveActor *);
     void setNerveAtActionEnd(LiveActor*, const al::Nerve*);
@@ -36,6 +40,10 @@ namespace al {
     void turnToTarget(LiveActor*, const al::LiveActor *, float);
 
     void expandClippingRadiusByShadowLength(LiveActor*, sead::Vector3f*, float);
+
+    void initJointLocalXRotator(const LiveActor *,const float *,const char *);
+    void initJointLocalYRotator(const LiveActor *,const float *,const char *);
+    void initJointLocalZRotator(const LiveActor*, const float*, const char*);
 
     void initActorPoseTRSV(al::LiveActor *);
     void initActorPoseTRMSV(al::LiveActor *);
@@ -49,14 +57,20 @@ namespace al {
     void initActorPoseT(al::LiveActor *,sead::Vector3<float> const&);
     void initActorPoseTR(al::LiveActor *,sead::Vector3<float> const&,sead::Vector3<float> const&);
 
-    void initCreateActorWithPlacementInfo(LiveActor *, const al::ActorInitInfo &);
+    void initLayoutPartsActor(LayoutActor*, LayoutActor*, const LayoutInitInfo&, char const*,
+                              char const*);
+    void initCreateActorWithPlacementInfo(LiveActor*, const al::ActorInitInfo&);
     void initMapPartsActor(LiveActor *, const al::ActorInitInfo  &, const char *);
     void initActorWithArchiveName(LiveActor*, const al::ActorInitInfo&, const sead::SafeString&, const char*);
     void initJointControllerKeeper(const LiveActor*, int);
     void initJointGlobalQuatController(const LiveActor*, const sead::Quatf*, const char*);
 
-    void appearBreakModelRandomRotateY(LiveActor *);
+    void appearBreakModelRandomRotateY(LiveActor*);
 
+    void faceToTarget(al::LiveActor *,sead::Vector3<float> const&);
+    void faceToTarget(al::LiveActor *,al::LiveActor const*);
+
+    bool isNear(const LiveActor *, const LiveActor *, float);
     bool isClipped(const LiveActor*);
     bool isDead(const LiveActor*);
     bool isAlive(const LiveActor*);
@@ -71,37 +85,33 @@ namespace al {
     bool isOnStageSwitch(IUseStageSwitch const *, const char *);
     bool isValidStageSwitch(IUseStageSwitch const *, const char *);
     bool isFallNextMove(const LiveActor *, const sead::Vector3f &, float, float);
-    bool isInDeathArea(const LiveActor *);
-    bool isCollidedFloorCode(const LiveActor *, const char *);
+    bool isInDeathArea(LiveActor *);
+    bool isCollidedFloorCode(LiveActor *, const char *);
     bool isNoCollide(LiveActor const *);
     bool isNearPlayer(const LiveActor*, float);
     bool isFallOrDamageCodeNextMove(const LiveActor *,  const sead::Vector3f &, float, float);
     bool isFaceToTargetDegreeH(const LiveActor*, const sead::Vector3f &, const sead::Vector3f &, float);
 
+    void tryListenStageSwitchAppear(al::LiveActor *);
+    void tryListenStageSwitchKill(al::LiveActor *);
+    
     bool tryOnSwitchDeadOn(IUseStageSwitch *);
     bool trySyncStageSwitchAppear(LiveActor *);
     PlayerActorHakoniwa* tryFindNearestPlayerActor(const LiveActor *);
     bool tryFindNearestPlayerPos(sead::Vector3f *, const LiveActor *);
-    bool tryAddRippleMiddle(const LiveActor*);
-    bool tryStartMclAnimIfNotPlaying(LiveActor *, char const *);
-    bool tryEmitEffect(IUseEffectKeeper *effectKeeper, char const *effectName, sead::Vector3f const *effectPosition);
+    bool tryAddRippleMiddle(LiveActor*);
+    bool tryStartActionIfNotPlaying(LiveActor*, const char*);
+    bool tryAddDisplayOffset(LiveActor *,ActorInitInfo const&);
 
-    sead::Vector3f* getTrans(const LiveActor*);
+    sead::Vector3f &getTrans(const LiveActor*);
     sead::Vector3f* getTransPtr(LiveActor*);
-    sead::Vector3f* getGravity(const LiveActor*);
+    sead::Vector3f &getGravity(const LiveActor*);
     sead::Vector3f* getGravityPtr(const LiveActor*);
-    sead::Vector3f* getFront(const LiveActor*);
+    sead::Vector3f &getFront(const LiveActor*);
     sead::Vector3f* getFrontPtr(LiveActor*);
-    sead::Vector3f* getVelocity(const LiveActor*);
-    sead::Vector3f *getVelocityPtr(LiveActor *);
-    sead::Vector3f *getUp(const LiveActor *);
-    sead::Vector3f *getUpPtr(LiveActor *);
-    sead::Vector3f *getScale(const LiveActor *);
-    sead::Vector3f *getScalePtr(LiveActor *);
-    float *getScaleX(LiveActor const *);
-    float *getScaleY(LiveActor const *);
-    float *getScaleZ(LiveActor const *);
-    Collider* getActorCollider(LiveActor const *);
+    sead::Vector3f &getVelocity(const LiveActor*);
+    sead::Vector3f* getVelocityPtr(LiveActor*);
+    Collider* getActorCollider(LiveActor*);
 
     sead::Matrix34f* getJointMtxPtr(const LiveActor*, const char*); //return type might be const
 
@@ -111,8 +121,8 @@ namespace al {
 
     void scaleVelocity(LiveActor*, float);
     void scaleVelocityDirection(LiveActor*, sead::Vector3f const &, float);
-    void scaleVelocityExceptDirection(LiveActor *, sead::Vector3f const &, float);
 
+    void setHitSensorPosPtr(LiveActor *,char const*,sead::Vector3f const*);
     void setTrans(LiveActor *, sead::Vector3f const &);
     void setVelocity(LiveActor*, sead::Vector3f const&);
     void setVelocity(LiveActor*, float, float, float);
@@ -120,11 +130,9 @@ namespace al {
     void setVelocityY(LiveActor*, float);
     void setVelocityZ(LiveActor*, float);
     void setVelocityZero(LiveActor*);
-    void setVelocityBlowAttackAndTurnToTarget(LiveActor *,
-                                              sead::Vector3f const &, float,
-                                              float);
+    void setVelocityBlowAttackAndTurnToTarget(LiveActor *, sead::Vector3f const&,
+                                                  float, float);
     void setActionFrameRate(LiveActor*, float);
-    void setEffectAllScale(IUseEffectKeeper *, char const *, sead::Vector3f const &);
 
     void addVelocityToGravityFittedGround(LiveActor*, float, unsigned int);
     void addVelocityToGravity(LiveActor*, float);
@@ -142,6 +150,10 @@ namespace al {
     void makeQuatUpFront(sead::Quatf *, sead::Vector3f const &, sead::Vector3f const &);
 
     void rotateQuatYDirDegree(LiveActor *, float);
+
+    float* findActorParamF32(const LiveActor*, const char*);
+
+    int* findActorParamS32(const LiveActor*, const char*);
 
     LiveActor* getSubActor(const LiveActor*, const char*); //NOTE: unknown return type
 

@@ -111,7 +111,10 @@ void CameraPoserCustom::update(void) {
 
     mDiffV = al::calcAngleOnPlaneDegree(mPrevTargetDir, targetDir, rightAxis);
 
-    float stickSpeed = alCameraPoserFunction::getStickSensitivityScale(this) * alCameraPoserFunction::getStickSensitivityLevel(this);
+    float stickSpeed = alCameraPoserFunction::getStickSensitivityScale(this) *
+                       alCameraPoserFunction::getStickSensitivityLevel(this);
+
+    // maybe instead of directly calculating the rotation based off what our current rotation is, we calculate it separately and then apply the rotation to our current one?
 
     al::rotateVectorDegree(&rotatedVec, rotatedVec, mCameraUp, playerInput.x * -stickSpeed); // Horizontal Rotation
 

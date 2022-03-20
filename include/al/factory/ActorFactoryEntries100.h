@@ -2,6 +2,7 @@
 
 #include "ActorFactory.h"
 
+#include "actors/SuperSpinDriver.h"
 #include "game/Actors/Shine.h"
 
 namespace al
@@ -68,6 +69,7 @@ namespace al
 
 static al::NameToCreator<al::createActor> actorEntries[] = {
     // CUSTOM ACTOR ENTRIES HERE
+    {"SuperSpinDriver", &ca::createCustomActor<SuperSpinDriver>},
     // VANILLA ACTOR ENTRIES
     {"AchievementNpc", &al::createActorFunction<class AchievementNpc>},
     {"AirBubble", &al::createActorFunction<class AirBubble>},
@@ -144,7 +146,7 @@ static al::NameToCreator<al::createActor> actorEntries[] = {
     {"CapAppearMapParts", &al::createActorFunction<class CapAppearMapParts>},
     {"CapBeamer", &al::createActorFunction<class CapBeamer>},
     {"CapBomb", &al::createActorFunction<class CapBomb>},
-    {"CapCatapult", &al::createActorFunction<class CapCatapult>},
+    {"CapCatapult", &al::createActorFunction<class SuperSpinDriver>},
     {"CapFlower", &al::createActorFunction<class CapFlower>},
     {"CapFlowerGroup", &al::createActorFunction<class CapFlowerGroup>},
     {"CapHanger", &al::createActorFunction<class CapHanger>},

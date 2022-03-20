@@ -1,12 +1,12 @@
 #pragma once
 
-#include "al/area/AreaObj.h"
-
-#include <sead/math/seadQuat.h>
-#include <sead/math/seadVector.h>
-#include <sead/prim/seadSafeString.h>
+#include <math/seadQuat.h>
+#include <math/seadVector.h>
+#include <prim/seadSafeString.h>
 
 #include "al/util/InputUtil.h"
+
+#include "al/camera/CameraTicket.h"
 
 namespace sead {
 class Heap;
@@ -27,6 +27,7 @@ class Projection;
 class IUseLayout;
 class ActorInitInfo;
 class Scene;
+class AreaObj;
 class IUseAudioKeeper;
 class SensorMsg;
 class IUseSceneObjHolder;
@@ -34,6 +35,10 @@ class HitSensor;
 class PlacementInfo;
 
 // from Starlight's header files. TODO clean this up, and include them in the proper places
+
+sead::Vector3f& getPlayerPos(LiveActor const*, int);
+
+sead::Vector3f& getPlayerPos(PlayerHolder const *, int);
 
 PlayerActorHakoniwa* getPlayerActor(al::LiveActor const*, int);
 
@@ -47,15 +52,15 @@ int getSubActorNum(al::LiveActor const*);
 
 al::LiveActor* getSubActor(al::LiveActor const*, int);
 
-sead::Vector3f* getVelocity(al::LiveActor const*);
-
-sead::Quatf* getQuat(al::LiveActor const*);
+sead::Quatf &getQuat(al::LiveActor const*);
 
 int getPlayerControllerPort(int);
 
 char const* getActionName(al::LiveActor const*);
 
-float getActionFrame(al::LiveActor const*);
+int getActionFrame(al::LiveActor const*);
+
+float getActionFrameMax(al::LiveActor const*);
 
 sead::Vector3f* getCameraPos(al::IUseCamera const*, int);
 
@@ -81,13 +86,7 @@ void setFront(al::LiveActor*, sead::Vector3f const&);
 
 void setQuat(al::LiveActor*, const sead::Quatf&);
 
-void setPaneTexture(al::IUseLayout*, char const*, nn::ui2d::TextureInfo const*);
-
 void setSensorFollowPosOffset(al::LiveActor*, sead::Vector3f const&);
-
-// void setPaneString(al::IUseLayout *layout, char const *paneName, char16_t const *, ushort);
-
-void setPaneStringFormat(al::IUseLayout* layout, char const* paneName, char const* format, ...);
 
 void setVelocityZero(al::LiveActor*);
 
@@ -156,11 +155,16 @@ void calcCameraUpDir(sead::Vector3f*, al::IUseCamera const*, int);
 const unsigned char* tryGetBymlFromArcName(sead::SafeStringBase<char> const&,
                                            sead::SafeStringBase<char> const&);
 
+al::CameraTicket *initObjectCamera(al::IUseCamera const*,al::PlacementInfo const&,char const*,char const*);
+al::CameraTicket *initObjectCamera(al::IUseCamera const*,al::ActorInitInfo const&,char const*,char const*);
+al::CameraTicket *initObjectCameraNoPlacementInfo(al::IUseCamera const*,char const*,char const*);
+
 void initActor(al::LiveActor*, al::ActorInitInfo const&);
 
 bool isObjectName(al::ActorInitInfo const&, char const*);
 bool isObjectName(al::PlacementInfo const&, char const*);
 
+void invalidateHitSensor(al::LiveActor *, const char *);
 void invalidateHitSensors(al::LiveActor*);
 
 void hideModelIfShow(al::LiveActor*);

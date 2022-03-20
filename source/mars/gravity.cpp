@@ -4,6 +4,7 @@
 #include <sead/math/seadMatrix.h>
 #include <sead/math/seadVector.h>
 #include <sead/gfx/seadCamera.h>
+#include "al/util/LiveActorUtil.h"
 #include "al/util/MathUtil.h"
 #include "debugMenu.hpp"
 #include "mars/gravity.h"
@@ -146,7 +147,7 @@ void calcActorGravity(al::LiveActor* actor) {
     int gravityCount = 0;
 
     if (isHaveGravityAreas) {
-        sead::Vector3f* trans = al::getTrans(actor);
+        sead::Vector3f* trans = al::getTransPtr(actor);
         int highestPriority = -100;
 
         for (int i = 0; i < gravityAreaGroup->mCurCount; i++) {
@@ -164,7 +165,7 @@ void calcActorGravity(al::LiveActor* actor) {
                             gravityCount = 0; // reset list since we do not need to calculate cumulative sum for lower priorities
                         }
                         // add vector to list
-                        gravityDirs[gravityCount] = result;
+                        gravityDirs[gravityCount] = result / pow(result.length(), 2);
                         // increment list count
                         gravityCount++;
                         isInGravityArea = true;
@@ -186,6 +187,11 @@ void calcActorGravity(al::LiveActor* actor) {
         }
 
         al::normalize(&finalGravity);
+
+        sead::Vector3f* curGrav = al::getGravityPtr(actor);
+
+        al::lerpVec(&finalGravity, *curGrav, finalGravity, 0.25); // more smooth gravity transitions
+        
         al::setGravity(actor, finalGravity);
     } else if (!rs::isPlayer2D(actor)) { // sticks to collision normals when not in 2D
         PlayerActorHakoniwa* playerActor = al::getPlayerActor(actor, 0);
@@ -200,8 +206,8 @@ void calcActorGravity(al::LiveActor* actor) {
 }
 
 void calcControlGravityDir(al::LiveActor *player, al::LiveActor *cap) {
-    sead::Vector3f playerGravity = *al::getGravity(player);
-    sead::Vector3f playerVel = *al::getVelocity(player);
+    sead::Vector3f playerGravity = al::getGravity(player);
+    sead::Vector3f playerVel = al::getVelocity(player);
     sead::Vector3f cross;
     static sead::Vector3f gravity = {0, -1, 0};
     sead::Vector3f ney = {0, -1, 0};

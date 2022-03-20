@@ -28,7 +28,9 @@ B59E28: // sead::system::print
 
 1F2A2C: // patches checkpoint system to always allow warping
     MOV W0, #1
-
+    
+4B5E30: // patches actor factory ctor with custom matching factory
+    B ProjectActorFactory
 4BE628: // patches camera poser factory with custom matching factory
     B ProjectCameraPoserFactory
 

@@ -37,10 +37,6 @@
 namespace al
 {
 
-    // getters
-
-    int getActionFrameMax(LiveActor const *);
-
     // setters
 
     void setEffectParticleScale(IUseEffectKeeper *actor, char const *effectName, float scale);
@@ -92,11 +88,6 @@ namespace al
 
     bool tryStartSklAnimIfExist(LiveActor *actor, const char *animName);
 
-    // byml stuff
-
-    f32 findActorParamF32(LiveActor const *, char const *);
-    s32 findActorParamS32(LiveActor const *, char const *);
-
     // effect stuff
 
     void emitEffect(IUseEffectKeeper *effectKeeper, char const *effectName, sead::Vector3f const *effectPosition);
@@ -128,7 +119,7 @@ namespace al
 
     // stage init stuff
 
-    StageInfo *getStageInfoMap(Scene const *, int);
+    struct StageInfo *getStageInfoMap(Scene const *, int);
 
     // misc
 

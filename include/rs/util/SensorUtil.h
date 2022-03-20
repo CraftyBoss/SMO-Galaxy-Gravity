@@ -6,13 +6,15 @@
 
 #include "al/LiveActor/LiveActor.h" // for SensorMsg
 
-#include <sead/math/seadVector.h>
+#include <math/seadVector.h>
 
 namespace rs
 {
 
 void setAppearItemFactorAndOffsetByMsg(al::LiveActor const*, al::SensorMsg const*,
                                        al::HitSensor const*);
+
+bool tryReceiveMsgInitCapTargetAndSetCapTargetInfo(al::SensorMsg const*,CapTargetInfo const*);
 
 bool isMsgBreakBySword(al::SensorMsg const*);
 bool isMsgStatueDrop(al::SensorMsg const*);
@@ -672,6 +674,7 @@ bool sendMsgPlayerObjUpperPunch2D(al::HitSensor*, al::HitSensor*);
 bool sendMsgPukupukuDash(al::HitSensor*, al::HitSensor*);
 bool sendMsgPukupukuKiss(al::HitSensor*, al::HitSensor*);
 bool sendMsgPukupukuRollingAttack(al::HitSensor*, al::HitSensor*);
+bool sendMsgPush(al::HitSensor*, al::HitSensor*);
 bool sendMsgPush2D(al::HitSensor*, al::HitSensor*);
 bool sendMsgPushToFish(al::HitSensor*, al::HitSensor*);
 bool sendMsgPushToMotorcycle(al::HitSensor*, al::HitSensor*);

@@ -70,17 +70,17 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
 
     gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, 0.8f);
 
-    sead::Vector2f startPos = sead::Vector2f(10.f, (dispHeight / 3) + 30.f);
-
     al::Scene *curScene = curSequence->curScene;
 
     if (curScene && isInGame) {
 
-        gTextWriter->beginDraw();
-        
         drawBackground((agl::DrawContext *)drawContext);
+        
+        gTextWriter->beginDraw();
 
-        gTextWriter->setCursorFromTopLeft(startPos);
+        gTextWriter->setCursorFromTopLeft(sead::Vector2f(10.f, (dispHeight / 3) + 30.f));
+
+        gTextWriter->setScaleFromFontHeight(20.0f);
 
         al::CameraPoser *curPoser;
 
@@ -144,10 +144,10 @@ void stageSceneHook(StageScene *stageScene)
         mars::calcActorGravity(p1->mHackCap);
     }
 
-    // if (al::isPadTriggerUp(-1)) // enables/disables debug menu
-    // {
-    //     showMenu = !showMenu;
-    // }
+    if (al::isPadTriggerUp(-1)) // enables/disables debug menu
+    {
+        showMenu = !showMenu;
+    }
 }
 
 void seadPrintHook(const char *fmt, ...) // hook for replacing sead::system::print with our custom logger

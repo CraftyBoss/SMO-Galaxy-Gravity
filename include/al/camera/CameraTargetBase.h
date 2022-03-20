@@ -3,6 +3,9 @@
 #include "sead/math/seadVector.h"
 
 namespace al {
+
+    struct CameraSubTargetBase;
+
     class CameraTargetBase {
         public:
             CameraTargetBase();
