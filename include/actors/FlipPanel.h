@@ -18,6 +18,7 @@ public:
     void exeEnd();
 private:
     bool isOn = false;
+    int mPressTimer = 0;
 
 };
 namespace {
