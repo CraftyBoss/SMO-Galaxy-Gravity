@@ -1,9 +1,11 @@
 #include "cameras/CameraPoserCustom.h"
+#include <math.h>
 #include "al/camera/CameraAngleVerticalCtrl.h"
 #include "al/camera/CameraPoser.h"
 #include "al/camera/alCameraPoserFunction.h"
 #include "al/util.hpp"
 #include "al/util/MathUtil.h"
+#include "al/util/VectorUtil.h"
 #include "logger.hpp"
 #include "sead/gfx/seadCamera.h"
 #include "sead/math/seadVector.h"
@@ -94,37 +96,38 @@ void CameraPoserCustom::update(void) {
     alCameraPoserFunction::calcTargetTrans(&mTargetTrans, this);
     mTargetTrans += mCameraUp * mOffsetY;
 
-    targetDir = sead::Vector3f(mPosition.x - mTargetTrans.x, mPosition.y - mTargetTrans.y,
-                               mPosition.z - mTargetTrans.z);
+    targetDir = mPosition - mTargetTrans;
     
     al::tryNormalizeOrDirZ(&targetDir);
 
     sead::Vector2f playerInput(0, 0);
     alCameraPoserFunction::calcCameraRotateStick(&playerInput, this);
 
-    sead::Vector3f rotatedVec = targetDir;
-
     sead::Vector3f rightAxis;
     rightAxis.setCross(targetDir, mCameraUp);
 
-    mDiffH = al::calcAngleOnPlaneDegree(mPrevTargetDir, targetDir, mCameraUp);
-
-    mDiffV = al::calcAngleOnPlaneDegree(mPrevTargetDir, targetDir, rightAxis);
 
     float stickSpeed = alCameraPoserFunction::getStickSensitivityScale(this) *
                        alCameraPoserFunction::getStickSensitivityLevel(this);
 
-    // maybe instead of directly calculating the rotation based off what our current rotation is, we calculate it separately and then apply the rotation to our current one?
-
-    al::rotateVectorDegree(&rotatedVec, rotatedVec, mCameraUp, playerInput.x * -stickSpeed); // Horizontal Rotation
-
-    al::rotateVectorDegree(&rotatedVec, rotatedVec, rightAxis, playerInput.y * -stickSpeed); // Vertical Rotation
+    sead::Vector3f preLook;
+    alCameraPoserFunction::calcPreLookDir(&preLook, this);
     
-    normalize2(rotatedVec, mDist); // divides length of vector by distance and multiplies result into input vector
+    sead::Vector3f rotatedVec = targetDir;
 
-    mPosition = mTargetTrans + rotatedVec;
 
-    mPrevTargetDir = targetDir;
+    // Horizontal Rotation
+    al::rotateVectorDegree(&rotatedVec, rotatedVec, mCameraUp, playerInput.x * -stickSpeed);
+
+    // Vertical Rotation
+    al::rotateVectorDegree(&rotatedVec, rotatedVec, rightAxis, playerInput.y * -stickSpeed);
+
+    mAngleH = al::calcAngleOnPlaneDegree(rotatedVec, mPrevTargetDir, mCameraUp);
+    mAngleV = al::calcAngleOnPlaneDegree(rotatedVec, mPrevTargetDir, rightAxis);
+
+    mPosition = mTargetTrans + (rotatedVec * mDist);
+
+    mPrevTargetDir = rotatedVec;
 }
 
 void CameraPoserCustom::movement() {

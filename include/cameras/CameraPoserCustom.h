@@ -25,9 +25,9 @@ namespace cc {
             float mDist = 1600.0f;
             float mAngleV = 0.0f;
             float mAngleH = 0.0f;
+            float mPrevH = 0.0f;
+            float mPrevV = 0.0f;
             float mSnapSpeed = 0.15f;
-            float mDiffV = 0.0f;
-            float mDiffH = 0.0f;
             bool mIsResetAngleIfSwitchTarget = false;
             sead::Vector3f mPrevTargetDir = sead::Vector3f::ey;
     };

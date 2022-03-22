@@ -48,7 +48,6 @@ void slerpQuat(sead::Quatf *,sead::Quatf const&,sead::Quatf const&,float);
 bool tryNormalizeOrDirZ(sead::Vector3f *);
 bool tryNormalizeOrDirZ(sead::Vector3f *, sead::Vector3f const&);
 bool tryNormalizeOrZero(sead::Vector3f*, sead::Vector3f const&);
-void rotateVectorDegree(sead::Vector3f *, const sead::Vector3f &, const sead::Vector3f &, float);
 void rotateVectorDegreeX(sead::Vector3f*, float);
 void rotateVectorDegreeY(sead::Vector3f*, float);
 void rotateVectorDegreeZ(sead::Vector3f*, float);

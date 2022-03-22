@@ -19,8 +19,8 @@ namespace alCameraPoserFunction {
     void calcPreCameraDirH(sead::Vector3<float> *,al::CameraPoser const*);
     void calcPreLookDir(sead::Vector3<float> *,al::CameraPoser const*);
     void calcPreLookDirH(sead::Vector3<float> *,al::CameraPoser const*);
-    void calcPreCameraAngleH(al::CameraPoser const*);
-    void calcPreCameraAngleV(al::CameraPoser const*);
+    float calcPreCameraAngleH(al::CameraPoser const*);
+    float calcPreCameraAngleV(al::CameraPoser const*);
     void setLookAtPosToTarget(al::CameraPoser *);
     void calcTargetTrans(sead::Vector3<float> *,al::CameraPoser const*);
     void setLookAtPosToTargetAddOffset(al::CameraPoser *,sead::Vector3<float> const&);

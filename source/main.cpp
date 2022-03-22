@@ -98,21 +98,25 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
 
         PlayerActorHakoniwa* p1 = al::tryGetPlayerActor(pHolder, 0);
 
-        sead::Vector3f* pTrans = &al::getTrans(p1);
-        sead::Vector3f* pVel = &al::getVelocity(p1);
+        sead::Vector3f* pTrans = al::getTransPtr(p1);
+        sead::Vector3f* pVel = al::getVelocityPtr(p1);
+        sead::Vector3f* pGrav = al::getGravityPtr(p1);
         float velH = al::calcSpeedH(p1);
         float velV = al::calcSpeedV(p1);
         
         gTextWriter->printf("Player Pos:\n%.3f   %.3f   %.3f\n", pTrans->x,pTrans->y,pTrans->z);
         gTextWriter->printf("Player Velocity:\n%.3f   %.3f   %.3f\nHorizontal: %.3f   Vertical: %.3f\n", pVel->x,pVel->y,pVel->z, velH, velV);
+        gTextWriter->printf("Player Gravity:\n%.3f   %.3f   %.3f\n", pGrav->x,pGrav->y,pGrav->z);
 
         if (curPoser) {
             gTextWriter->printf("Camera Poser Name: %s\n", curPoser->getName());
 
             if (al::isEqualString(curPoser->getName(), "CameraPoserCustom")) {
                 cc::CameraPoserCustom* poserCustom = (cc::CameraPoserCustom*)curPoser;
-                gTextWriter->printf("Verical Angle: %f\n", poserCustom->mAngleV);
+                gTextWriter->printf("Vertical Angle: %f\n", poserCustom->mAngleV);
                 gTextWriter->printf("Horizontal Angle: %f\n", poserCustom->mAngleH);
+                gTextWriter->printf("Prev Vertical Angle: %f\n", poserCustom->mPrevV);
+                gTextWriter->printf("Prev Horizontal Angle: %f\n", poserCustom->mPrevH);
             }
         } else {
             gTextWriter->printf("There is no camera poser.\n");
