@@ -66,6 +66,7 @@ namespace al {
     void initActorWithArchiveName(LiveActor*, const al::ActorInitInfo&, const sead::SafeString&, const char*);
     void initJointControllerKeeper(const LiveActor*, int);
     void initJointGlobalQuatController(const LiveActor*, const sead::Quatf*, const char*);
+    void initLinksActor(LiveActor*, ActorInitInfo const&, const char*, int);
 
     void appearBreakModelRandomRotateY(LiveActor*);
 
@@ -148,6 +149,7 @@ namespace al {
     void calcQuat(sead::Quatf*, const LiveActor*);
     void calcJointFrontDir(sead::Vector3f*, const LiveActor*, const char*);
     void calcJointPos(sead::Vector3f*, const LiveActor*, const char*);
+    int calcLinkChildNum(ActorInitInfo const&, char const*);
 
     void makeQuatUpFront(sead::Quatf *, sead::Vector3f const &, sead::Vector3f const &);
 

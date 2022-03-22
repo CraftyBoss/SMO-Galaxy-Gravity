@@ -16,6 +16,7 @@ public:
     void exeWait();
     void exePressed();
     void exeEnd();
+    bool isGot();
 private:
     bool isOn = false;
     int mPressTimer = 0;
@@ -30,12 +31,21 @@ namespace {
 class FlipPanelObserver : public al::LiveActor {
 public:
     FlipPanelObserver(const char* name);
-    void init(const al::ActorInitInfo&);
-    void initAfterPlacement();
-    bool receiveMsg(const al::SensorMsg* message, al::HitSensor* source, al::HitSensor* target);
+    void init(const al::ActorInitInfo&) override;
+
+    void exeWait();
+    void exeEnd();
+
+    bool isAllOn();
 
 private:
-    sead::PtrArray<FlipPanel> mPanels;
-    bool isAllOn = false;
+    constexpr static const char* mFlipPanelLink = "FlipPanelGroup";
+    sead::PtrArray<FlipPanel> mFlipPanels;
+    int mFlipPanelCount = 0;
+    int mFlipPanelOnNum = 0;
 
 };
+namespace {
+    NERVE_HEADER(FlipPanelObserver, Wait);
+    NERVE_HEADER(FlipPanelObserver, End);
+}

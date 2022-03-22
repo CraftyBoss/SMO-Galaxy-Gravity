@@ -71,7 +71,7 @@ namespace al
 static al::NameToCreator<al::createActor> actorEntries[] = {
     // CUSTOM ACTOR ENTRIES HERE
     {"SuperSpinDriver", &ca::createCustomActor<SuperSpinDriver>},
-    {"FlipPanel", &ca::createCustomActor<FlipPanel>},
+    {"FlipPanelObserver", &ca::createCustomActor<FlipPanelObserver>},
     // VANILLA ACTOR ENTRIES
     {"AchievementNpc", &al::createActorFunction<class AchievementNpc>},
     {"AirBubble", &al::createActorFunction<class AirBubble>},

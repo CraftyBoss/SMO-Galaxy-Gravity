@@ -61,8 +61,59 @@ void FlipPanel::exeEnd() {
 
 }
 
+bool FlipPanel::isGot() {
+    return isOn;
+}
+
 namespace {
     NERVE_IMPL(FlipPanel, Wait)
     NERVE_IMPL(FlipPanel, Pressed)
     NERVE_IMPL(FlipPanel, End)
+}
+
+FlipPanelObserver::FlipPanelObserver(const char* name) : al::LiveActor(name) {}
+
+void FlipPanelObserver::init(const al::ActorInitInfo& info) {
+    mFlipPanelCount = al::calcLinkChildNum(info, mFlipPanelLink);
+    int linkCount = mFlipPanelCount;
+    mFlipPanels.allocBuffer(linkCount, nullptr);
+    
+    for (int i = 0; i < linkCount; i++) {
+        auto flipPanel = new FlipPanel("FlipPanel");
+        al::initLinksActor(flipPanel, info, mFlipPanelLink, i);
+        mFlipPanels.pushBack(flipPanel);
+    }
+    gLogger->LOG("Array size: %i", mFlipPanels.size());
+    al::initNerve(this, &nrvFlipPanelObserverWait, 0);
+}
+
+void FlipPanelObserver::exeWait() {
+    for (int i = 0; i < mFlipPanelCount; i++) {
+        if (mFlipPanels[i]->isGot()) {
+            mFlipPanelOnNum++;
+        } else {
+            mFlipPanelOnNum = 0;
+            break;
+        }
+    }
+    if (isAllOn()) {
+        al::setNerve(this, &nrvFlipPanelObserverEnd);
+    }
+}
+
+void FlipPanelObserver::exeEnd() {
+    if (al::isFirstStep(this)) {
+        for (int i = 0; i < mFlipPanelCount; i++) {
+            al::setNerve(mFlipPanels[i], &nrvFlipPanelEnd);
+        }
+    }
+}
+
+bool FlipPanelObserver::isAllOn() {
+    return mFlipPanelCount == mFlipPanelOnNum;
+}
+
+namespace {
+    NERVE_IMPL(FlipPanelObserver, Wait);
+    NERVE_IMPL(FlipPanelObserver, End);
 }
