@@ -17,6 +17,7 @@ public:
     void exePressed();
     void exeEnd();
     bool isGot();
+
 private:
     bool isOn = false;
     int mPressTimer = 0;
@@ -37,12 +38,14 @@ public:
     void exeEnd();
 
     bool isAllOn();
+    void appear() override;
 
 private:
     constexpr static const char* mFlipPanelLink = "FlipPanelGroup";
     sead::PtrArray<FlipPanel> mFlipPanels;
     int mFlipPanelCount = 0;
     int mFlipPanelOnNum = 0;
+    int mDelayStep = 10;
 
 };
 namespace {

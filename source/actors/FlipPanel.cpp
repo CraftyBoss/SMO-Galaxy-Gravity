@@ -1,5 +1,6 @@
 #include "actors/FlipPanel.h"
 #include "logger.hpp"
+#include "al/util/OtherUtil.h"
 
 
 FlipPanel::FlipPanel(const char* name) : al::LiveActor(name) {}
@@ -10,7 +11,8 @@ void FlipPanel::init(const al::ActorInitInfo& info) {
     al::startAction(this, "OffWait");
     al::hideMaterial(this, "FlipPanelEx");
     al::hideMaterial(this, "FlipPanelDone");
-    makeActorAlive();
+    al::trySyncStageSwitchAppear(this);
+    //makeActorAlive();
 }
 
 bool FlipPanel::receiveMsg(const al::SensorMsg* message, al::HitSensor* source, al::HitSensor* target) {
@@ -65,6 +67,7 @@ bool FlipPanel::isGot() {
     return isOn;
 }
 
+
 namespace {
     NERVE_IMPL(FlipPanel, Wait)
     NERVE_IMPL(FlipPanel, Pressed)
@@ -74,17 +77,25 @@ namespace {
 FlipPanelObserver::FlipPanelObserver(const char* name) : al::LiveActor(name) {}
 
 void FlipPanelObserver::init(const al::ActorInitInfo& info) {
+    al::initActorSceneInfo(this,info);
+    al::initStageSwitch(this,info);
+    al::initExecutorWatchObj(this,info);
     mFlipPanelCount = al::calcLinkChildNum(info, mFlipPanelLink);
     int linkCount = mFlipPanelCount;
     mFlipPanels.allocBuffer(linkCount, nullptr);
-    
+    al::tryGetArg(&mDelayStep, info, "SwitchOnDelayStep");
     for (int i = 0; i < linkCount; i++) {
         auto flipPanel = new FlipPanel("FlipPanel");
         al::initLinksActor(flipPanel, info, mFlipPanelLink, i);
         mFlipPanels.pushBack(flipPanel);
     }
-    gLogger->LOG("Array size: %i", mFlipPanels.size());
     al::initNerve(this, &nrvFlipPanelObserverWait, 0);
+    if (al::trySyncStageSwitchAppear(this)) {
+        for (int i = 0; i < linkCount; i++) {
+            mFlipPanels[i]->makeActorDead();
+        }
+    }
+    //makeActorAlive();
 }
 
 void FlipPanelObserver::exeWait() {
@@ -102,15 +113,23 @@ void FlipPanelObserver::exeWait() {
 }
 
 void FlipPanelObserver::exeEnd() {
-    if (al::isFirstStep(this)) {
+    if (al::isGreaterEqualStep(this, mDelayStep)) {
         for (int i = 0; i < mFlipPanelCount; i++) {
             al::setNerve(mFlipPanels[i], &nrvFlipPanelEnd);
         }
+        al::onStageSwitch(this, "SwitchActivateAllOn");
     }
 }
 
 bool FlipPanelObserver::isAllOn() {
     return mFlipPanelCount == mFlipPanelOnNum;
+}
+
+void FlipPanelObserver::appear() {
+    al::LiveActor::appear();
+    for (int i = 0; i < mFlipPanelCount; i++) {
+       mFlipPanels[i]->al::LiveActor::appear();
+    }
 }
 
 namespace {

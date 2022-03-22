@@ -40,6 +40,7 @@ namespace al {
     void appearItem(const LiveActor *);
     void turnToTarget(LiveActor*, const sead::Vector3f&, float);
     void turnToTarget(LiveActor*, const al::LiveActor *, float);
+    void onStageSwitch(IUseStageSwitch*, char const*);
 
     void expandClippingRadiusByShadowLength(LiveActor*, sead::Vector3f*, float);
 
@@ -61,12 +62,16 @@ namespace al {
 
     void initLayoutPartsActor(LayoutActor*, LayoutActor*, const LayoutInitInfo&, char const*,
                               char const*);
+    void initActor(LiveActor*, ActorInitInfo const&);
     void initCreateActorWithPlacementInfo(LiveActor*, const al::ActorInitInfo&);
     void initMapPartsActor(LiveActor *, const al::ActorInitInfo  &, const char *);
     void initActorWithArchiveName(LiveActor*, const al::ActorInitInfo&, const sead::SafeString&, const char*);
     void initJointControllerKeeper(const LiveActor*, int);
     void initJointGlobalQuatController(const LiveActor*, const sead::Quatf*, const char*);
     void initLinksActor(LiveActor*, ActorInitInfo const&, const char*, int);
+    void initActorSceneInfo(al::LiveActor *,al::ActorInitInfo const&);
+    void initStageSwitch(al::LiveActor *,al::ActorInitInfo const&);
+    void initExecutorWatchObj(al::LiveActor *,al::ActorInitInfo const&);
 
     void appearBreakModelRandomRotateY(LiveActor*);
 
