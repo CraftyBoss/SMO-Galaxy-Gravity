@@ -34,13 +34,15 @@ public:
     void exeShoot(void);
     void exeShootEnd(void);
 
+private:
     CapTargetInfo *mCapTargetInfo = nullptr; // 0x108
     sead::Vector3f mHitSensorPos= sead::Vector3f(0,0,0); // 0x110
     IUsePlayerPuppet *mPlayerPuppet = nullptr; // 0x120
     al::CameraTicket *mObjectCamera = nullptr; // 0x138
     sead::Quatf mActorQuat = sead::Quatf::unit;  // 0x140
     CapMessageEnableChecker *mCapMsgEnableChecker = nullptr; // 0x150
-    int mReactionTimer = 10; // 0x158
+    int mReactionTimer = 10;                                 // 0x158
+    float mLaunchSpeed = 36.0f;
 };
 
 namespace {

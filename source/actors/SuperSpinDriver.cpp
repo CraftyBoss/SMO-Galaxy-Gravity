@@ -40,6 +40,8 @@ void SuperSpinDriver::init(al::ActorInitInfo const& initInfo) {
     al::tryListenStageSwitchAppear(this);
     al::tryListenStageSwitchKill(this);
 
+    al::tryGetArg(&mLaunchSpeed, initInfo, "LaunchSpeed");
+
     mActorQuat = al::getQuat(this);
     rs::createCapMessageEnableChecker(&mCapMsgEnableChecker, this, initInfo);
 
@@ -311,7 +313,7 @@ void SuperSpinDriver::exeShoot(void) {
 
     if (railRider) {
 
-        railRider->setSpeed(36.0f);
+        railRider->setSpeed(mLaunchSpeed);
 
         railRider->move();
 
