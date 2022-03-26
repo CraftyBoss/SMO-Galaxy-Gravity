@@ -26,7 +26,7 @@ void SuperSpinDriver::init(al::ActorInitInfo const& initInfo) {
 
     gLogger->LOG("Creating SuperSpinDriver.\n");
 
-    al::initActorWithArchiveName(this, initInfo, "CapCatapult", 0); // inits rail if we set link name to "Rail"
+    al::initActorWithArchiveName(this, initInfo, "SuperSpinDriver", 0); // inits rail if we set link name to "Rail"
     
     al::initNerve(this, &nrvSuperSpinDriverWait, 0);
     al::tryAddDisplayOffset(this, initInfo);
@@ -291,15 +291,16 @@ void SuperSpinDriver::exeBack(void) {
     }
 
     sead::Vector3f frontDir;
+    sead::Quatf quat = al::getQuat(this);
     al::calcFrontDir(&frontDir, this);
     rs::setPuppetFront(mPlayerPuppet, frontDir);
-    rs::setPuppetUp(mPlayerPuppet, sead::Vector3f::ey);
+    rs::setPuppetQuat(mPlayerPuppet, quat);
 
     sead::Vector3f jointPos;
     al::calcJointPos(&jointPos, this, "MarioPos");
     rs::setPuppetTrans(mPlayerPuppet, jointPos);
 
-    if (al::isGreaterEqualStep(this, 5))
+    if (al::isGreaterEqualStep(this, 56))
         al::setNerve(this, &nrvSuperSpinDriverShoot);
 }
 

@@ -119,6 +119,7 @@ namespace al {
     sead::Vector3f* getFrontPtr(LiveActor*);
     sead::Vector3f &getVelocity(const LiveActor*);
     sead::Vector3f* getVelocityPtr(LiveActor*);
+    sead::Vector3f &getUp(const LiveActor*);
     Collider* getActorCollider(LiveActor*);
 
     sead::Matrix34f* getJointMtxPtr(const LiveActor*, const char*); //return type might be const
