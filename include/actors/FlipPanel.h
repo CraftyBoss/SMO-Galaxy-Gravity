@@ -13,6 +13,7 @@ public:
     //void initAfterPlacement() override;
     bool receiveMsg(const al::SensorMsg* message, al::HitSensor* source, al::HitSensor* target) override;
 
+    void exeAppear();
     void exeWait();
     void exePressed();
     void exeEnd();
@@ -24,6 +25,7 @@ private:
 
 };
 namespace {
+    NERVE_HEADER(FlipPanel, Appear)
     NERVE_HEADER(FlipPanel, Wait)
     NERVE_HEADER(FlipPanel, Pressed)
     NERVE_HEADER(FlipPanel, End)

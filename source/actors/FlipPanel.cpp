@@ -12,7 +12,6 @@ void FlipPanel::init(const al::ActorInitInfo& info) {
     al::hideMaterial(this, "FlipPanelEx");
     al::hideMaterial(this, "FlipPanelDone");
     al::trySyncStageSwitchAppear(this);
-    //makeActorAlive();
 }
 
 bool FlipPanel::receiveMsg(const al::SensorMsg* message, al::HitSensor* source, al::HitSensor* target) {
@@ -26,6 +25,10 @@ bool FlipPanel::receiveMsg(const al::SensorMsg* message, al::HitSensor* source, 
     } 
     
     return false;
+}
+
+void FlipPanel::exeAppear() {
+
 }
 
 void FlipPanel::exeWait() {
@@ -69,6 +72,7 @@ bool FlipPanel::isGot() {
 
 
 namespace {
+    NERVE_IMPL(FlipPanel, Appear);
     NERVE_IMPL(FlipPanel, Wait)
     NERVE_IMPL(FlipPanel, Pressed)
     NERVE_IMPL(FlipPanel, End)
@@ -95,7 +99,6 @@ void FlipPanelObserver::init(const al::ActorInitInfo& info) {
             mFlipPanels[i]->makeActorDead();
         }
     }
-    //makeActorAlive();
 }
 
 void FlipPanelObserver::exeWait() {
@@ -118,6 +121,7 @@ void FlipPanelObserver::exeEnd() {
             al::setNerve(mFlipPanels[i], &nrvFlipPanelEnd);
         }
         al::onStageSwitch(this, "SwitchActivateAllOn");
+        al::startSe(this, "");
     }
 }
 
@@ -128,7 +132,8 @@ bool FlipPanelObserver::isAllOn() {
 void FlipPanelObserver::appear() {
     al::LiveActor::appear();
     for (int i = 0; i < mFlipPanelCount; i++) {
-       mFlipPanels[i]->al::LiveActor::appear();
+       mFlipPanels[i]->appear();
+       al::setNerve(mFlipPanels[i], &nrvFlipPanelAppear);
     }
 }
 
