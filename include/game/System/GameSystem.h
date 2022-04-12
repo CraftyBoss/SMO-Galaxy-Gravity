@@ -7,5 +7,5 @@ class GameSystem : public al::NerveExecutor {
     public:
         void init();
         void *gap;
-        GameSystemInfo *mSystemInfo; // 0x18
+        al::GameSystemInfo *mSystemInfo; // 0x18
 };

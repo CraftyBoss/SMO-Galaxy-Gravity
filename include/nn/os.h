@@ -53,7 +53,7 @@ void nnosLockMutex(nnosMutexType*);
 bool nnosTryLockMutex(nnosMutexType*);
 void nnosUnlockMutex(nnosMutexType*);
 
-long long int llabs(long long int n);
+// long long int llabs(long long int n);
 
 #ifdef __cplusplus
 }

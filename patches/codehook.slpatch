@@ -1,9 +1,11 @@
 [version=100, target=main]
-4CC364: // StageScene::control+1C
-    MOV X0, X19
-    BL stageSceneHook
-4C8648: // hook to the init of a stage to modify certain conditions (we also have access to SceneInitInfo)
-    BL stageInitHook
+//4CC364: // StageScene::control+1C
+//    MOV X0, X19
+//    BL stageSceneHook
+50F928 BL hakoniwaSequenceHook
+//4C8648: 
+//    BL stageInitHook
+4C8DD0 BL stageInitHook // hook to the init of a stage to modify certain conditions (we also have access to SceneInitInfo)
 
 // hooks to start logger
 5359D8: // GameSystem::init 

@@ -130,14 +130,11 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
     al::executeDraw(curSequence->mLytKit, "２Ｄバック（メイン画面）");
 }
 
-void stageInitHook(StageScene *initStageScene, al::SceneInitInfo *sceneInitInfo)
-{
-    __asm("MOV X19, X0");
-    __asm("LDR X24, [X1, #0x18]");
+void stageInitHook(al::ActorInitInfo *info, StageScene *curScene, al::PlacementInfo const *placement, al::LayoutInitInfo const *lytInfo, al::ActorFactory const *factory, al::SceneMsgCtrl *sceneMsgCtrl, al::GameDataHolderBase *dataHolder) {
 
-    // place any code that needs to be ran during init here (creating actors for example)
-
-    __asm("MOV X1, X24");
+    al::initActorInitInfo(info, curScene, placement, lytInfo, factory, sceneMsgCtrl,
+                          dataHolder);
+    
 }
 
 ulong threadInit()
@@ -147,9 +144,15 @@ ulong threadInit()
     return 0x20;
 }
 
-void stageSceneHook(StageScene *stageScene)
-{
-    stageScene->stageSceneLayout->updatePlayGuideMenuText();
+bool hakoniwaSequenceHook(HakoniwaSequence* sequence) {
+
+    bool isFirstStep = al::isFirstStep(sequence);
+
+    if (isFirstStep) {
+        return isFirstStep;
+    }
+    
+    StageScene* stageScene = (StageScene*)sequence->curScene;
 
     al::PlayerHolder *pHolder = al::getScenePlayerHolder(stageScene);
     PlayerActorHakoniwa* p1 = al::tryGetPlayerActor(pHolder, 0);
@@ -164,7 +167,6 @@ void stageSceneHook(StageScene *stageScene)
         mars::calcActorGravity(p1->mHackCap);
     }
 
-
     if (al::isPadTriggerUp(-1)) // enables/disables debug menu
     {
          showMenu = !showMenu;
@@ -172,6 +174,8 @@ void stageSceneHook(StageScene *stageScene)
     if (al::isPadTriggerLeft(-1)) {
         al::setVelocityZero(p1);
     }
+
+    return isFirstStep;
 }
 
 void seadPrintHook(const char *fmt, ...) // hook for replacing sead::system::print with our custom logger

@@ -7,6 +7,7 @@
 #include "al/LiveActor/LiveActor.h"
 #include "al/async/FunctorBase.h"
 #include "al/collision/Collider.h"
+#include "game/GameData/GameDataHolderBase.h"
 #include "game/Player/PlayerActorHakoniwa.h"
 #include "al/layout/LayoutActor.h"
 #include "al/layout/LayoutInitInfo.h"
@@ -14,6 +15,9 @@
 typedef unsigned int uint;
 
 namespace al {
+
+    struct Scene;
+    struct ActorFactory;
 
     void tryInitFixedModelGpuBuffer(const LiveActor*);
     void offUpdateMovementEffectAudioCollisionSensor(const LiveActor*);
@@ -71,7 +75,8 @@ namespace al {
     void initLinksActor(LiveActor*, ActorInitInfo const&, const char*, int);
     void initActorSceneInfo(al::LiveActor *,al::ActorInitInfo const&);
     void initStageSwitch(al::LiveActor *,al::ActorInitInfo const&);
-    void initExecutorWatchObj(al::LiveActor *,al::ActorInitInfo const&);
+    void initExecutorWatchObj(al::LiveActor*, al::ActorInitInfo const&);
+    void initActorInitInfo(al::ActorInitInfo *, al::Scene const*,al::PlacementInfo const*,al::LayoutInitInfo const*,al::ActorFactory const*, struct SceneMsgCtrl *, GameDataHolderBase *);
 
     void appearBreakModelRandomRotateY(LiveActor*);
 
